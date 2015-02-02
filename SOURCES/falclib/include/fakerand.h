@@ -113,7 +113,9 @@ inline	long GenerateFastRandom( void )
 			push	eax
 			RDTSC
 			add	DWORD PTR FastRandom,edx
+#undef xor
 			xor	DWORD PTR FastRandom,eax
+#define xor ^
 			mov	eax, DWORD PTR LastRandom
 			add	DWORD PTR FastRandom,eax
 			add	DWORD PTR LastRandom,edx

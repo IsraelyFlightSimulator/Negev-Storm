@@ -290,7 +290,8 @@ inline DWORD XMM_ARGB(XMMColor *Source)
 			sal		eax,8
 			fld		[edx+4]
 			fistp	r
-			or		eax,r
+#undef or
+            or		eax,r
 			sal		eax,8
 			fld		[edx+8]
 			fistp	r
@@ -299,6 +300,7 @@ inline DWORD XMM_ARGB(XMMColor *Source)
 			fld		[edx+16]
 			fistp	r
 			or		eax,r
+#define or ||
 			mov		r,eax
 			pop		edx
 			pop		eax

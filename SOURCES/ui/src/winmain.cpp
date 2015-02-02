@@ -1,3 +1,4 @@
+#include "..//..//..//NEGEVSTORM/NEGEVSTORM/NEGEVSTORM.h"
 //#include "stdafx.h"
 //#define _USE_SECRET_CODE_ 1
 //#pragma warning(disable:4100)
@@ -504,7 +505,7 @@ int PASCAL HandleWinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR  
 	MSG  msg;
 	char buf[60],title[60];
 	char fileName[_MAX_PATH];
-	FILE *testopen;
+//	FILE *testopen;
 
 
 
@@ -668,27 +669,27 @@ int PASCAL HandleWinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR  
 	_mkdir(FalconPictureDirectory);
 
 	// Test for CD stuff
-	{
-		char buffer[MAX_PATH];
-
-		EnableOpenTest();
-		sprintf(buffer,"%s\\terrain\\theater.map",FalconTerrainDataDir);
-		testopen=FILE_Open(buffer,"r");
-		if(!testopen)
-			exit(-1);
-		fclose(testopen);
-		sprintf(buffer,"%s\\falcon4.ini",FalconObjectDataDir);
-		testopen=FILE_Open(buffer,"r");
-		if(!testopen)
-			exit(-1);
-		fclose(testopen);
-/*		sprintf(buffer,"%s\\smoketrail.gif",FalconMiscTexDataDir);
-		testopen=FILE_Open(buffer,"r");
-		if(!testopen)
-			exit(-1);
-		fclose(testopen);
-*/		DisableOpenTest();
-	}
+//	{
+//		char buffer[MAX_PATH];
+//
+//		EnableOpenTest();
+//		sprintf(buffer,"%s\\terrain\\theater.map",FalconTerrainDataDir);
+//		testopen=fopen(buffer,"r");
+//		if(!testopen)
+//			exit(-1);
+//		fclose(testopen);
+//		sprintf(buffer,"%s\\falcon4.ini",FalconObjectDataDir);
+//		testopen=fopen(buffer,"r");
+//		if(!testopen)
+//			exit(-1);
+//		fclose(testopen);
+///*		sprintf(buffer,"%s\\smoketrail.gif",FalconMiscTexDataDir);
+//		testopen=fopen(buffer,"r");
+//		if(!testopen)
+//			exit(-1);
+//		fclose(testopen);
+//*/		DisableOpenTest();
+//	}
 
    ResInit(NULL);
    ResCreatePath (FalconDataDirectory, FALSE);
@@ -775,7 +776,8 @@ int PASCAL HandleWinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR  
 int PASCAL WinMain ( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR  lpCmdLine,
    int nCmdShow)
 {
-	int Result = -1;
+    my_initialize_everything(); // בדיקות ואתחולים.
+    int Result = -1;
 	__try {
 		Result = HandleWinMain ( hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 	}

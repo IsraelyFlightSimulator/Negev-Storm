@@ -18,6 +18,18 @@
     <ClInclude Include="include\comsup.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\Resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\stdafx.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\targetver.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ui\src\winmain.cpp">
@@ -26,9 +38,18 @@
     <ClCompile Include="ui\src\f4config.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NEGEVSTORM\NEGEVSTORM\stdafx.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="falclib\include\falcon4.rc">
+      <Filter>Ressourcendateien</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.rc">
       <Filter>Ressourcendateien</Filter>
     </ResourceCompile>
   </ItemGroup>

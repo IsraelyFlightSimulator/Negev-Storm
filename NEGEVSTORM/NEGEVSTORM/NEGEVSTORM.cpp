@@ -1525,6 +1525,27 @@ void My_config::my_open(void)
 }
 
 
+// בודק מדוע נכשלה קריאת הקובץ.
+void My_config::check_reading_was_OK(void)
+{
+    wstring my_error_code = {MY_INVALID_WSTRING};
+    my_error_code = {my_check_flags()};
+
+    if ( my_error_code not_eq L"" )
+    {
+        my_error_handler.my_error_stack.push({__FILE__,
+                                             __FUNCTION__,
+                                             __LINE__});
+
+        my_error_handler.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה" + my_error_code,
+                                                  MY_NOֹ_ERRORֹ_CODE});
+
+        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                         My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
+    }
+}
+
+
 // מפענח את קובץ התצורה.
 void My_config::my_parse(void)
 {
@@ -1552,10 +1573,12 @@ my_next_line:
     {
         // קורא את הקובץ שורה אחר שורה.
         wstring my_command = {MY_INVALID_WSTRING};
-        
+
         // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Agetline);k(std%3A%3Agetline);k(getline);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
         getline(my_config_file,
                 my_command);
+        
+        check_reading_was_OK();
 
         // מקדם את מונה השורות מהקובץ.
         my_line_number++;
@@ -1591,6 +1614,8 @@ my_next_line:
 
         getline(my_config_file,
                 my_value);
+
+        check_reading_was_OK();
 
         my_line_number++;
 
@@ -1952,18 +1977,12 @@ void My_config::my_error_reading_config(const signed int my_line_number)
 const wstring My_config::my_check_flags(void)
 {
     // מוסיף את דיגלוני השגיאות.
-    wstring my_error_code = {MY_INVALID_WSTRING};
+    wstring my_error_code = {L""};
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Abad);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Abad);k(std%3A%3Abasic_ofstream%3A%3Abad);k(ios%2Fstd%3A%
     if ( my_config_file.bad() )
     {
         my_error_code = {L" BAD "};
-    }
-
-    // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aeof);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Aeof);k(std%3A%3Abasic_ofstream%3A%3Aeof);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aeof);k(std%3A%3Abasic_ios%3A%3Aeof);k(std%3A%3Aios_base%3A%3Aeof);k(eof);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    if ( my_config_file.eof() )
-    {
-        my_error_code += { L" EOF " };
     }
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Afail);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Afail);k(std%3A%3Abasic_ofstream%3A%3Afail);k(ios%2Fstd%3A%3Abasic_ios%3A%3Afail);k(std%3A%3Abasic_ios%3A%3Afail);k(std%3A%3Aios_base%3A%3Afail);k(fail);k(DevLang-C%2B%2B);k(TargetOS-Windows)&
@@ -2066,10 +2085,10 @@ void My_error::my_display_error_message(void)
             my_temp_wstring = {to_wstring(my_input_value)};
 
             my_final_error_wstring += {my_temp_wstring};
-
-            // מוסיף שורת הפרדה בין משפטים.
-            my_add_line(my_final_error_wstring);
         }
+
+        // מוסיף שורת הפרדה בין משפטים.
+        my_add_line(my_final_error_wstring);
 
         // סיימנו עם המשתנה אז אפשר להוציא אותו מהמחסנית.
         my_error_stack.pop(); // my_input_value.
@@ -2619,11 +2638,6 @@ const wstring My_logger::my_check_flags(void)
     if ( my_log_file.bad() )
     {
         my_error_code = {L" BAD "};
-    }
-
-    if ( my_log_file.eof() )
-    {
-        my_error_code += { L" EOF " };
     }
 
     if ( my_log_file.fail() )

@@ -11,7 +11,7 @@
 
 // הגדרות קדם מעבד.
 // HACK האם צריך ?
-#define NEGEVSTORM 1 // אנחנו בתצורה של הסימולטור שלנו או פריפלקון.
+//#define NEGEVSTORM 1 // אנחנו בתצורה של הסימולטור שלנו או פריפלקון.
 
 #define MAX_LOADSTRING 100 
 #define OPENEYES
@@ -447,6 +447,8 @@ class My_config
         const wstring my_check_flags(void);
 
         void my_parse( void );
+
+        void check_reading_was_OK(void);
 
         const bool my_is_comment_line(const wstring& my_line);
 

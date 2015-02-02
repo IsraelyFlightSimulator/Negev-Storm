@@ -81,7 +81,7 @@ BOOL FarTexDB::Setup(DXContext *hrc, const char* path)
 
 	// Open the texture database description file
 	sprintf(filename,"%s%s",path,"FarTiles.PAL");
-	listFile = CreateFile_Open(filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+	listFile = CreateFile(filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 
 	if( listFile == INVALID_HANDLE_VALUE )
 	{

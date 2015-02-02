@@ -73,7 +73,7 @@ void TLevel::Setup( int level, int width, int height, const char *mapPath )
 	// Open the block offset file for this level
 	sprintf( filename, "%s\\Theater.o%0d", mapPath, level );
 
-	offsetFile = INT_Open( filename, O_BINARY | O_RDONLY ,0);
+	offsetFile = open( filename, O_BINARY | O_RDONLY ,0);
 	if (offsetFile >= 0) {
 
 		// Read the file offsets into the post pointer array

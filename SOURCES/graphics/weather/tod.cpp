@@ -71,7 +71,7 @@ void CTimeOfDay::Setup( char *dataPath )
 		fclose(in);
 	
 	sprintf(todfile,"%s\\tod.lst",dataPath);
-	in = FILE_Open (todfile, "r");
+	in = fopen(todfile, "r");
 	if (in == NULL) {
 		char string[256];
 		sprintf( string, "TOD file open failed:  %s", todfile );

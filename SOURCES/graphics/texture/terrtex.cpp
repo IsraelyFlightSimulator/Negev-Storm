@@ -110,7 +110,7 @@ BOOL TextureDB::Setup(DXContext *hrc, const char* path)
 	// Open the texture database description file
 	strcpy(filename,texturePath);
 	strcat(filename,"Texture.BIN");
-	listFile = CreateFile_Open(filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL );
+	listFile = CreateFile(filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL );
 
 	// Read the number of texture sets and tiles in the database.
 	result = ReadFile(listFile,&numSets,sizeof(numSets),&bytesRead,NULL);

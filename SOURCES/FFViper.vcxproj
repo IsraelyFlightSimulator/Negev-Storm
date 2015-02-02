@@ -11,13 +11,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.h" />
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\Resource.h" />
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\stdafx.h" />
+    <ClInclude Include="..\NEGEVSTORM\NEGEVSTORM\targetver.h" />
     <ClInclude Include="include\comsup.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.cpp" />
+    <ClCompile Include="..\NEGEVSTORM\NEGEVSTORM\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="ui\src\f4config.cpp" />
     <ClCompile Include="ui\src\winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\NEGEVSTORM\NEGEVSTORM\NEGEVSTORM.rc" />
     <ResourceCompile Include="falclib\include\falcon4.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -116,7 +125,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;STRICT;WIN32_LEAN_AND_MEAN;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -153,6 +162,7 @@
       <OpenMPSupport>false</OpenMPSupport>
       <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
       <UseFullPaths>true</UseFullPaths>
+      <ForcedIncludeFiles>StdAfx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

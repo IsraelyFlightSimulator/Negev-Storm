@@ -269,7 +269,7 @@ float CStar::Julian (int year, int month, float day)
 int CStar::Setup (char *starfile, float maxmagnitude)
 {
 	Cleanup ();
-	FILE *in = FILE_Open (starfile, "r");
+	FILE *in = fopen(starfile, "r");
 	if (in == NULL) return 1;
 
 	char buffer[MAXSTRING];
