@@ -11,6 +11,7 @@
 #include "playerop.h"
 #include "helo.h"
 
+signed int x = {0}; // כדי למנוע שגיאת מקשר 4221.
 
 // edg:
 // this shit's gone

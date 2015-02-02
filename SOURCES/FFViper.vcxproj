@@ -79,9 +79,9 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <UseOfAtl>false</UseOfAtl>
-    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -101,12 +101,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>../build/x86/debug_win32/ffviper/</OutDir>
     <IntDir>../build/x86/debug_win32/ffviper/</IntDir>
     <TargetName>FFViper</TargetName>
-    <GenerateManifest>true</GenerateManifest>
-    <LibraryPath>F:\Program Files (x86)\Intel\Composer XE 2013\compiler\lib\ia32;$(LibraryPath)</LibraryPath>
+    <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -120,10 +120,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;STRICT;WIN32_LEAN_AND_MEAN;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>
-      </PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>../build/x86/debug_win32/ffviper/</AssemblerListingLocation>
       <ObjectFileName>../build/x86/debug_win32/ffviper/</ObjectFileName>
@@ -132,13 +130,29 @@
       <AdditionalIncludeDirectories>./;falclib/include;codelib/include;vu2/include;sim/include;campaign/include;ui/include;graphics/include;amd/inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>false</BrowseInformation>
       <BrowseInformationFile>../build/x86/debug_win32/ffviper/FFViper.bsc</BrowseInformationFile>
       <CompileAs>CompileAsCpp</CompileAs>
-      <StructMemberAlignment>4Bytes</StructMemberAlignment>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
+      <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,11 +168,19 @@
       <AllowIsolation>true</AllowIsolation>
       <EnableUAC>true</EnableUAC>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
-      <LargeAddressAware>false</LargeAddressAware>
+      <LargeAddressAware>true</LargeAddressAware>
       <StackReserveSize>
       </StackReserveSize>
       <StackCommitSize>
       </StackCommitSize>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AssemblyDebug>true</AssemblyDebug>
+      <MinimumRequiredVersion>6.1</MinimumRequiredVersion>
+      <TerminalServerAware>false</TerminalServerAware>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+      <CLRUnmanagedCodeCheck>true</CLRUnmanagedCodeCheck>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

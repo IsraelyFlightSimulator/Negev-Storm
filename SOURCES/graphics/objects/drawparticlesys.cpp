@@ -2007,7 +2007,7 @@ bool DrawableParticleSys::LoadParameters(void)
 
 	// COBRA - RED - Setup the LOG10 Array and FADE Array
 	for(int a=0; a<LOG10_ARRAY_ITEMS; a++) Log10Array[a]=1.0f-log10((float)a/LOG10_ARRAY_ITEMS*9.0f+1.0f);
-	for(int a=0; a<ASIN_ARRAY_ITEMS; a++) ASinArray[a]=asinf(a/ASIN_ARRAY_ITEMS) * 4 / PI;
+	for(int a=0; a<ASIN_ARRAY_ITEMS; a++) ASinArray[a]=asinf(a*1.0f/ASIN_ARRAY_ITEMS*1.0f) * 4 / PI;
 
 	if(PPN)
 		delete [] PPN;

@@ -150,7 +150,7 @@ void AircraftClass::DropChaff (void)
 {
 	vector		pos, posDelta;
 	int		type;
-	BombClass	*weapon;
+    BombClass	*weapon = {nullptr};
 	
 	if (counterMeasureStation[CHAFF_STATION].weaponCount > 0)
 	{
@@ -256,7 +256,7 @@ void AircraftClass::DropFlare (void)
 {
 	vector		pos, posDelta;
 	int		type;
-	BombClass	*weapon;
+    BombClass	*weapon = {nullptr};
 	
 	if (counterMeasureStation[FLARE_STATION].weaponCount > 0)
 	{

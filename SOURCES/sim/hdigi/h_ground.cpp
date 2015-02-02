@@ -7,7 +7,9 @@
 
 #define MIN_ALT 200.0F
 
-// RV - Biker - No more need for GroundCheck
+signed int x = {0}; // כדי למנוע שגיאת מקשר 4221.
+
+// // RV - Biker - No more need for GroundCheck
 //void HeliBrain::GroundCheck(void)
 //{
 //	float groundAlt;

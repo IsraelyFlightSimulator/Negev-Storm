@@ -12,6 +12,8 @@
 #include "TalkIO.h"
 #include "Transprt.h"
 
+signed int x = {0}; // כדי למנוע שגיאת מקשר 4221.
+
 #if 0
 
 #define DOWNSAMPLE_AMT			3

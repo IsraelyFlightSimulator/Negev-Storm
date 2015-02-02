@@ -786,7 +786,7 @@ void FireControlComputer::CheckFeatures (MissileClass* theMissile)
 	VuListIterator featureWalker (SimDriver.featureList);
 	FalconEntity* testObject = NULL;
 	FalconEntity* closestObj = NULL;
-	SimObjectType* tmpTarget;
+	SimObjectType* tmpTarget = {nullptr};
 	float groundRange;
 	float curMin, dx, dy;
 

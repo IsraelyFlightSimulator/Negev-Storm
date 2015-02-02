@@ -4,6 +4,8 @@
 #include "convert.h"
 #include "Campterr.h"
 
+signed int x = {0}; // כדי למנוע שגיאת מקשר 4221.
+
 #ifdef CAMPTOOL
 
 extern FILE* OpenCampFile (char *filename, char *ext, char *mode);

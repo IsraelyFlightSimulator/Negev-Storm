@@ -3529,7 +3529,7 @@ void ContextMPR::DrawPrimitive(int nPrimType, WORD VtxInfo, WORD nVerts, MPRVtxT
 {
 	TLVERTEX *pVtx;
 	TLVERTEX *sVertex;
-	SPolygon *sPolygon;
+    SPolygon *sPolygon = {nullptr};
 	float	PolyZAvg=0;
 
 	// Ensure no degenerate nPrimTypeitives

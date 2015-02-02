@@ -1034,8 +1034,8 @@ int get_ip (char *str)
 void ParseCommandLine (LPSTR cmdLine)
 {
 
-	FILE *fp1;
-	int i1;
+	//FILE *fp1;
+	//int i1;
 
 
 	
