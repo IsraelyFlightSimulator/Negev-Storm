@@ -1151,7 +1151,12 @@ TCHAR szWindowClass[ MAX_LOADSTRING ]; // the main window class name
 // לא יכול לדווח שגיאות כי הבנאי של מערכת השגיאות טרם רץ.
 My_system_requirements::My_system_requirements(void)
 {
+    // אתחולים קריטיים.
+// HACK
+    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
+    // ללא שורה זו הקובץ יצא ריק !
     locale::global(locale("Hebrew_Israel.1255"));
+
     my_check_architecture();
 
     my_check_compiler_version();
@@ -1202,8 +1207,6 @@ My_logger::My_logger(void)
     // מאתחל את כל משתני המחלקה.
     my_log_file = {};
 
-    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
-    // ללא שורה זו הקובץ יצא ריק !
     locale my_locale(locale::classic(), new codecvt_utf8<wchar_t>);
 
     // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aimbue);k(ostream%2Fstd%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ofstream%3A%3Aimbue);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aimbue);k(std%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ios%3A%3Aimbue);k(imbue);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
@@ -1327,16 +1330,16 @@ void My_error::my_check_for_memory_leaks(void)
 My_coprocessor::My_coprocessor(void)
 {
     my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__});
+                                  __FUNCTION__,
+                                  __LINE__});
 
     my_chop();
 
     my_error.my_error_stack.pop(); // my_chop.
 
     my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__});
+                                  __FUNCTION__,
+                                  __LINE__});
 
     my_accuracy();
 
@@ -1351,9 +1354,9 @@ void My_coprocessor::my_chop(void)
     unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
 
     my_error.my_error_stack.push({__FILE__,
-                                          __FUNCTION__,
-                                          __LINE__,
-                                          L"my_errno_t_code"});
+                                  __FUNCTION__,
+                                  __LINE__,
+                                  L"my_errno_t_code"});
 
     My_sub_range<errno_t,
                  MY_INVALID_SIGNED_INT, 
@@ -1369,7 +1372,7 @@ void My_coprocessor::my_chop(void)
     if ( my_errno_t_code )
     {
         my_error.my_parameters_stack.push({L"שגיאת עיגול של המעבד המתמטי",
-                                                   my_errno_t_code});
+                                           my_errno_t_code});
 
         my_error.my_report_error();
     }
@@ -1384,9 +1387,9 @@ void My_coprocessor::my_accuracy(void)
     unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
 
     my_error.my_error_stack.push({__FILE__,
-                                          __FUNCTION__,
-                                          __LINE__,
-                                          L"my_errno_t_code"});
+                                  __FUNCTION__,
+                                  __LINE__,
+                                  L"my_errno_t_code"});
 
     My_sub_range<errno_t,
                  MY_INVALID_SIGNED_INT,
@@ -1401,7 +1404,7 @@ void My_coprocessor::my_accuracy(void)
     if ( my_errno_t_code )
     {
         my_error.my_parameters_stack.push({L"שגיאת 24 ביט של המעבד המתמטי",
-                                                   my_errno_t_code});
+                                           my_errno_t_code});
 
         my_error.my_report_error();
     }

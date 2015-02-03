@@ -10,13 +10,17 @@
 
 
 // הגדרות קדם מעבד.
-// HACK האם צריך ?
-//#define NEGEVSTORM 1 // אנחנו בתצורה של הסימולטור שלנו או פריפלקון.
+#define NEGEVSTORM 1 // אנחנו בתצורה של הסימולטור שלנו או פריפלקון.
 
+// HACK האם צריך ?
 #define MAX_LOADSTRING 100 
 #define OPENEYES
 #define AirBaseRelocTeamOnly 1
 #define AirBaseRelocNoFar 2
+
+// HACK
+#undef fopen
+#undef fclose
 // סוף הגדרות קדם מעבד.
 
 
