@@ -34,6 +34,7 @@ using std::locale;
 using std::endl;
 
 using std::stack;
+using std::codecvt_utf8;
 // סוף הגדרת שמות מתחם.
 
 
@@ -112,8 +113,22 @@ enum MY_PADLOCK_MODE: signed int // לא יכול להיות class.
 // סוף הגדרת קבועים.
 
 
-
 // הכרזת אוביקטים.
+// תבנית לבדיקת תקינות גדלי הסוגים.
+template <typename my_type,
+          const signed int my_size>
+class My_check_type_size
+{
+    // בנאי
+    public:
+        My_check_type_size(void)
+        {
+            static_assert( sizeof(my_type) == my_size,
+                           "wrong type size" );
+        }
+};
+
+
 // השתמש בתבנית זו כדי לבדוק כל משתנה כדי לגלות אם הוא חורג מתחום הערכים שאופייני לו.
 // בודק אם המשתנה הוא בטווח בין שני פרמטרים.
 // אם לא, מציג הודעת שגיאה.
@@ -168,12 +183,12 @@ class My_sub_range
                 my_temp_int = { static_cast< signed int >( my_input_value ) };
 
                 // דחיפת פרמטרי השגיאה הנוכחית למחסנית השגיאות.
-                my_error_handler.my_parameters_stack.push( { L"המשתנה מחוץ לטווח",
+                my_error.my_parameters_stack.push( { L"המשתנה מחוץ לטווח",
                                                              my_temp_int } );
 
                 // טיפול בשגיאה עם אפשרות הצגתה למשתמש ורישום בקובץ לוג.
-                my_error_handler.my_report_error(my_error_handler.MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                                 my_error_handler.MY_LOG_ERROR::MY_DO_LOG_ERROR );
+                my_error.my_report_error(my_error.MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                                 my_error.MY_LOG_ERROR::MY_DO_LOG_ERROR );
             }
         }
 
@@ -305,7 +320,7 @@ class My_logger
                                  
         void my_add_dash(wstring& my_input_wstring);
     
-        void my_write_to_log_file();
+        void my_write_to_log_file(void);
     
         void my_open(const signed int my_mode);
     
@@ -431,11 +446,11 @@ class My_coprocessor
 
 
 // מנהל קובץ תצורה.
-class My_config
+class My_configuration_file
 {
     public:
 
-        My_config( void ); // בנאי
+        My_configuration_file( void ); // בנאי
 
         void my_read( void );
 

@@ -1113,13 +1113,13 @@ static My_config_option<wstring> my_wstring_options[] =
 // הסדר חשוב כי יש תלות באתחולים של הבנאים.
 My_system_requirements my_system_requirements = {};
 
-My_logger my_errors_log_file = {};
+My_logger my_logger = {};
 
-My_error my_error_handler = {};
+My_error my_error = {};
 
 My_coprocessor my_coprocessor = {};
 
-My_config my_configuration_file = {};
+My_configuration_file my_configuration_file = {};
 
 
 wstring my_data_directory = { MY_DATA_DIRECTORY };
@@ -1145,18 +1145,13 @@ TCHAR szWindowClass[ MAX_LOADSTRING ]; // the main window class name
 
 
 
-// הכרזת פונקציות.
-void my_initialize_debug_variables(void);
-// סוף הכרזת פונקציות.
-
-
-
 // הגדרות פונקציות.
 // בנאי.
 // הדבר הראשון הוא לבדוק התאמה מינימלית לדרישות המערכת.
 // לא יכול לדווח שגיאות כי הבנאי של מערכת השגיאות טרם רץ.
 My_system_requirements::My_system_requirements(void)
 {
+    locale::global(locale("Hebrew_Israel.1255"));
     my_check_architecture();
 
     my_check_compiler_version();
@@ -1188,47 +1183,31 @@ void My_system_requirements::my_check_compiler_version(void)
 void My_system_requirements::my_check_POD_sizes(void)
 {
     // http://msdn.microsoft.com/en-us/library/cc953fe1(v=vs.140).aspx
-    static_assert( 1 == sizeof(bool),
-                  "sizeof bool is wrong" );
-
-    static_assert( 1 == sizeof(char),
-                  "sizeof char is wrong" );
-
-    static_assert( 2 == sizeof(wchar_t),
-                  "sizeof wchar_t is wrong" );
-
-    static_assert( 2 == sizeof(short),
-                  "sizeof short is wrong" );
-
-    static_assert( 4 == sizeof(int),
-                  "sizeof int is wrong" );
-
-    static_assert( 4 == sizeof(long),
-                  "sizeof long is wrong" );
-
-    static_assert( 4 == sizeof(float),
-                  "sizeof float is wrong" );
-
-    static_assert( 8 == sizeof(long long),
-                  "sizeof long long is wrong" );
-
-    static_assert( 8 == sizeof(double),
-                  "sizeof double is wrong" );
-
-    static_assert( 8 == sizeof(long double),
-                  "sizeof long double is wrong" );
+    My_check_type_size<bool, 1>();
+    My_check_type_size<char, 1>();
+    My_check_type_size<wchar_t, 2>();
+    My_check_type_size<short, 2>();
+    My_check_type_size<int, 4>();
+    My_check_type_size<long, 4>();
+    My_check_type_size<float, 4>();
+    My_check_type_size<long long, 8>();
+    My_check_type_size<double, 8>();
+    My_check_type_size<long double, 8>();
 }
 
 
 // בנאי
 My_logger::My_logger(void)
 {
-    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
-    // ללא שורה זו הקובץ יצא ריק !
-    locale::global(locale("Hebrew_Israel.1255"));
-
     // מאתחל את כל משתני המחלקה.
     my_log_file = {};
+
+    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
+    // ללא שורה זו הקובץ יצא ריק !
+    locale my_locale(locale::classic(), new codecvt_utf8<wchar_t>);
+
+    // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aimbue);k(ostream%2Fstd%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ofstream%3A%3Aimbue);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aimbue);k(std%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ios%3A%3Aimbue);k(imbue);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
+    my_log_file.imbue(my_locale);
 
     my_log_file_name = {MY_LOG_FILE_FOLDER};
 
@@ -1347,21 +1326,21 @@ void My_error::my_check_for_memory_leaks(void)
 // בנאי
 My_coprocessor::My_coprocessor(void)
 {
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__});
 
     my_chop();
 
-    my_error_handler.my_error_stack.pop(); // my_chop.
+    my_error.my_error_stack.pop(); // my_chop.
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__});
 
     my_accuracy();
 
-    my_error_handler.my_error_stack.pop(); // my_accuracy.
+    my_error.my_error_stack.pop(); // my_accuracy.
 }
 
 
@@ -1371,7 +1350,7 @@ void My_coprocessor::my_chop(void)
     // לא נעשה שימוש בערך הזה.
     unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                           __FUNCTION__,
                                           __LINE__,
                                           L"my_errno_t_code"});
@@ -1389,13 +1368,13 @@ void My_coprocessor::my_chop(void)
 
     if ( my_errno_t_code )
     {
-        my_error_handler.my_parameters_stack.push({L"שגיאת עיגול של המעבד המתמטי",
+        my_error.my_parameters_stack.push({L"שגיאת עיגול של המעבד המתמטי",
                                                    my_errno_t_code});
 
-        my_error_handler.my_report_error();
+        my_error.my_report_error();
     }
 
-    my_error_handler.my_error_stack.pop(); // my_errno_t_code.
+    my_error.my_error_stack.pop(); // my_errno_t_code.
 }
 
 
@@ -1404,7 +1383,7 @@ void My_coprocessor::my_accuracy(void)
 {
     unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                           __FUNCTION__,
                                           __LINE__,
                                           L"my_errno_t_code"});
@@ -1421,48 +1400,43 @@ void My_coprocessor::my_accuracy(void)
 
     if ( my_errno_t_code )
     {
-        my_error_handler.my_parameters_stack.push({L"שגיאת 24 ביט של המעבד המתמטי",
+        my_error.my_parameters_stack.push({L"שגיאת 24 ביט של המעבד המתמטי",
                                                    my_errno_t_code});
 
-        my_error_handler.my_report_error();
+        my_error.my_report_error();
     }
 
-    my_error_handler.my_error_stack.pop(); // my_errno_t_code.
+    my_error.my_error_stack.pop(); // my_errno_t_code.
 }
 
 
 // בנאי
-My_config::My_config(void)
+My_configuration_file::My_configuration_file(void)
 {
-    locale::global(locale("Hebrew_Israel.1255"));
-
     my_config_file = {};
+
+    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
+    // ללא שורה זו הקובץ יצא ריק !
+    //locale my_locale(locale::classic(), new codecvt_utf8<wchar_t>);
+
+    // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aimbue);k(ostream%2Fstd%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ofstream%3A%3Aimbue);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aimbue);k(std%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ios%3A%3Aimbue);k(imbue);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
+    //my_config_file.imbue(my_locale);
 }
 
 
 // מאתחל הכל.
 void my_initialize_everything(void)
 {
-    my_initialize_debug_variables();
+#ifndef NEGEVSTORM
+    FalconDisplay.displayFullScreen = {FALSE};
+#endif;
 
     my_configuration_file.my_read();
 }
 
 
-// מאתחל משתני ניפוי שגיאות.
-void my_initialize_debug_variables(void)
-{
-    // HACK לתקן זאת.
-    //my_initialize_debug( MY_DEBUGGER_MODE::MY_TEXT );
-
-#ifndef NEGEVSTORM
-    FalconDisplay.displayFullScreen = { FALSE };
-#endif
-}
-
-
 // קורא את קובץ התצורה.
-void My_config::my_read(void)
+void My_configuration_file::my_read(void)
 {
     my_open();
 
@@ -1473,7 +1447,7 @@ void My_config::my_read(void)
 
 
 // קורא את קובץ ההגדרות.
-void My_config::my_open(void)
+void My_configuration_file::my_open(void)
 {
     // בונה את הנתיב עם שם הקובץ.
     wstring my_config_file_path = {MY_INVALID_WSTRING};
@@ -1481,7 +1455,7 @@ void My_config::my_open(void)
 
     my_config_file_path += {MY_CONFIG_FILE_NAME};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                           __FUNCTION__,
                                           __LINE__,
                                           L"my_mode"});
@@ -1499,7 +1473,7 @@ void My_config::my_open(void)
     my_config_file.open(my_config_file_path,
                         my_mode);
 
-    my_error_handler.my_error_stack.pop(); // my_mode.
+    my_error.my_error_stack.pop(); // my_mode.
 
     // בודק שהקובץ נפתח בהצלחה.
     bool my_temp_bool = {false};
@@ -1512,48 +1486,48 @@ void My_config::my_open(void)
         wstring my_error_code = {MY_INVALID_WSTRING};
         my_error_code = {my_check_flags()};
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_parameters_stack.push({L"שגיאה בפתיחת קובץ התצורה" + my_error_code,
+        my_error.my_parameters_stack.push({L"שגיאה בפתיחת קובץ התצורה" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
     }
 }
 
 
 // בודק מדוע נכשלה קריאת הקובץ.
-void My_config::check_reading_was_OK(void)
+void My_configuration_file::check_reading_was_OK(void)
 {
     wstring my_error_code = {MY_INVALID_WSTRING};
     my_error_code = {my_check_flags()};
 
     if ( my_error_code not_eq L"" )
     {
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה" + my_error_code,
+        my_error.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
     }
 }
 
 
 // מפענח את קובץ התצורה.
-void My_config::my_parse(void)
+void My_configuration_file::my_parse(void)
 {
     // סופר כמה שורות נקראו מהקובץ למקרה של שגיאה.
-    my_error_handler.my_error_stack.push({__FILE__,
-                                          __FUNCTION__,
-                                          __LINE__,
-                                          L"my_line_number"});
+    my_error.my_error_stack.push({__FILE__,
+                                  __FUNCTION__,
+                                  __LINE__,
+                                  L"my_line_number"});
 
     My_sub_range<signed int,
                  MY_INVALID_SIGNED_INT,
@@ -1590,7 +1564,7 @@ my_next_line:
         }
 
         // בודק את אורך השורה שנקראה מהקובץ.
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__,
                                              L"my_line_length"});
@@ -1635,7 +1609,7 @@ my_next_line:
             goto my_next_line;
         }
 
-        my_error_handler.my_error_stack.pop(); // my_line_length.
+        my_error.my_error_stack.pop(); // my_line_length.
 
         // דוגם את התו הראשון בשורה. לפי תו זה ניתן לדעת את סוג המשתנה.
         wchar_t my_first_wchar = {MY_INVALID_WCHAR_T};
@@ -1661,7 +1635,7 @@ my_next_line:
 
 
 // מדלג על שורות של הערות.
-const bool My_config::my_is_comment_line(const wstring& my_line)
+const bool My_configuration_file::my_is_comment_line(const wstring& my_line)
 {
     wchar_t my_first_wchar = {MY_INVALID_WCHAR_T};
 
@@ -1679,7 +1653,7 @@ const bool My_config::my_is_comment_line(const wstring& my_line)
 
 
 // הסתעפות לפי סוג הפרמטר.
-const bool My_config::my_switch(const wchar_t my_first_wchar,
+const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
                                 const wstring my_command,
                                 const wstring my_value)
 {
@@ -1696,10 +1670,7 @@ const bool My_config::my_switch(const wchar_t my_first_wchar,
             {
                 return EXIT_FAILURE;
             }
-            else
-            {
-                return EXIT_SUCCESS;
-            }
+            break;
         }
         // עשרוני.
         case L'f':
@@ -1712,10 +1683,7 @@ const bool My_config::my_switch(const wchar_t my_first_wchar,
             {
                 return EXIT_FAILURE;
             }
-            else
-            {
-                return EXIT_SUCCESS;
-            }
+            break;
         }
         // בינארי.
         case L'b':
@@ -1728,10 +1696,7 @@ const bool My_config::my_switch(const wchar_t my_first_wchar,
             {
                 return EXIT_FAILURE;
             }
-            else
-            {
-                return EXIT_SUCCESS;
-            }
+            break;
         }
         // מחרוזת.
         case L's':
@@ -1744,10 +1709,7 @@ const bool My_config::my_switch(const wchar_t my_first_wchar,
             {
                 return EXIT_FAILURE;
             }
-            else
-            {
-                return EXIT_SUCCESS;
-            }
+            break;
         }
         // אם הגענו לכאן סימן שהקלט מהקובץ היה שגוי.
         default:
@@ -1755,11 +1717,12 @@ const bool My_config::my_switch(const wchar_t my_first_wchar,
             return EXIT_FAILURE;
         }
     }
+    return EXIT_SUCCESS;
 }
 
 
 // מגדיר את אופציות השלמים.
-const bool My_config::my_set_int_options(const wstring& my_command,
+const bool My_configuration_file::my_set_int_options(const wstring& my_command,
                                          const wstring& my_value)
 {
     // בונה רשימה של כל המשתנים השלמים.
@@ -1808,7 +1771,7 @@ const bool My_config::my_set_int_options(const wstring& my_command,
 
 
 // מגדיר את אופציות השברים.
-const bool My_config::my_set_double_options(const wstring& my_command,
+const bool My_configuration_file::my_set_double_options(const wstring& my_command,
                                             const wstring& my_value)
 {
     My_config_option<double>* my_player_options = {my_double_options};
@@ -1846,7 +1809,7 @@ const bool My_config::my_set_double_options(const wstring& my_command,
 
 
 // מגדיר את אופציות הדגלים.
-const bool My_config::my_set_bool_options(const wstring& my_command,
+const bool My_configuration_file::my_set_bool_options(const wstring& my_command,
                                           const wstring& my_value)
 {
     My_config_option<bool>* my_player_options = {my_bool_options};
@@ -1890,7 +1853,7 @@ const bool My_config::my_set_bool_options(const wstring& my_command,
 
 
 // מגדיר את אופציות המחרוזות.
-const bool My_config::my_set_wstring_options(const wstring& my_command,
+const bool My_configuration_file::my_set_wstring_options(const wstring& my_command,
                                              const wstring& my_value)
 {
     My_config_option<wstring>* my_player_options = {my_wstring_options};
@@ -1916,7 +1879,7 @@ const bool My_config::my_set_wstring_options(const wstring& my_command,
 
 
 // סוגר את קובץ התצורה.
-void My_config::my_close(void)
+void My_configuration_file::my_close(void)
 {
     // מאפס את דיגלוני השגיאה.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ifstream%3A%3Aclear);k(istream%2Fstd%3A%3Abasic_istream%3A%3Aclear);k(std%3A%3Abasic_ifstream%3A%3Aclear);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aclear);k(std%3A%3Abasic_istream%3A%3Aclear);k(std%3A%3Abasic_ios%3A%3Aclear);k(clear);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
@@ -1935,25 +1898,25 @@ void My_config::my_close(void)
         wstring my_error_code = {MY_INVALID_WSTRING};
         my_error_code = {my_check_flags()};
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_parameters_stack.push({L"סגירת קובץ תצורה נכשלה" + my_error_code,
+        my_error.my_parameters_stack.push({L"סגירת קובץ תצורה נכשלה" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
     }
 }
 
 
 // יוצא עם הודעת שגיאה.
-void My_config::my_exit_with_error(const signed int my_line_number)
+void My_configuration_file::my_exit_with_error(const signed int my_line_number)
 {
-    my_error_handler.my_error_stack.pop(); // my_line_number.
+    my_error.my_error_stack.pop(); // my_line_number.
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__,
                                          L"my_error_reading_config"});
@@ -1963,18 +1926,18 @@ void My_config::my_exit_with_error(const signed int my_line_number)
 
 
 // שגיאה בקריאת קובץ התצורה.
-void My_config::my_error_reading_config(const signed int my_line_number)
+void My_configuration_file::my_error_reading_config(const signed int my_line_number)
 {
-    my_error_handler.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה בשורה",
+    my_error.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה בשורה",
                                               my_line_number});
 
-    my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+    my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                      My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
 }
 
 
 // בודק דיגלוני שגיאות של קובץ.
-const wstring My_config::my_check_flags(void)
+const wstring My_configuration_file::my_check_flags(void)
 {
     // מוסיף את דיגלוני השגיאות.
     wstring my_error_code = {L""};
@@ -2022,7 +1985,7 @@ void My_error::my_report_error(MY_DISPLAY_ERROR my_display_error,
         if ( MY_LOG_ERROR::MY_DO_LOG_ERROR == my_log_error )
         {
             // עדכון פרטי השגיאה בקובץ הלוג.
-            my_errors_log_file.my_update(my_final_error_wstring);
+            my_logger.my_update(my_final_error_wstring);
         }
 
         my_add_contact_information();
@@ -2212,14 +2175,14 @@ const wstring My_error::my_string_to_wstring(const string& my_input_string)
 
 
 // מוסיף את פרטי יצירת הקשר.
-void My_error::my_add_contact_information()
+void My_error::my_add_contact_information(void)
 {
     // פרטי יצירת קשר כדי שאוכל לתקן את השגיאה.
-    my_error_handler.my_final_error_wstring += {L"שלח בבקשה את פרטי השגיאה לכתובת"};
+    my_error.my_final_error_wstring += {L"שלח בבקשה את פרטי השגיאה לכתובת"};
 
-    my_add_line(my_error_handler.my_final_error_wstring);
+    my_add_line(my_error.my_final_error_wstring);
 
-    my_error_handler.my_final_error_wstring += {MY_DEVELOPERS_EMAIL_ADDRESS};
+    my_error.my_final_error_wstring += {MY_DEVELOPERS_EMAIL_ADDRESS};
 }
 
 
@@ -2285,11 +2248,11 @@ void My_error::my_catastrophic_error(void)
 void My_logger::my_update(const wstring& my_error_wstring)
 {
     // אתחול קובץ הלוג.
-    my_errors_log_file.my_initialize();
+    my_logger.my_initialize();
 
-    my_error_handler.my_internal_error_counter = {7};
+    my_error.my_internal_error_counter = {7};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__,
                                          L"my_mode"});
@@ -2304,7 +2267,7 @@ void My_logger::my_update(const wstring& my_error_wstring)
 
     my_open(my_mode);
 
-    my_error_handler.my_error_stack.pop(); // mode.
+    my_error.my_error_stack.pop(); // mode.
 
     my_write(my_error_wstring); // כותב את מחרוזת פרטי השגיאה.
 
@@ -2348,9 +2311,9 @@ void My_logger::my_create_log_file_name(void)
     my_create_time_struct(my_current_time);
 
     // בניית היום.
-    my_error_handler.my_internal_error_counter = {5};
+    my_error.my_internal_error_counter = {5};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__,
                                          L"my_date_time_digits"});
@@ -2399,7 +2362,7 @@ void My_logger::my_create_log_file_name(void)
 
     my_date_time_digits = {my_temp_int};
 
-    my_error_handler.my_error_stack.pop(); // my_date_time_digits.
+    my_error.my_error_stack.pop(); // my_date_time_digits.
 
                                            // הוספת סיומת שם הקובץ.
     my_log_file_name += {MY_LOG_FILE_EXTENSION};
@@ -2417,20 +2380,20 @@ void My_logger::my_create_time_struct(struct tm& my_current_time)
     const signed int MY_TIME21_ERROR = {-1};
     if ( MY_TIME21_ERROR == my_seconds_since_1970 )
     {
-        my_error_handler.my_parameters_stack.push({L"שגיאה בחישוב הזמן",
+        my_error.my_parameters_stack.push({L"שגיאה בחישוב הזמן",
                                                   MY_NOֹ_ERRORֹ_CODE}); // אין קוד שגיאה להצגה.
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR); // כי אנחנו כבר בתוך התיעוד.
     }
 
-    my_error_handler.my_internal_error_counter = {4};
+    my_error.my_internal_error_counter = {4};
 
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__,
                                          L"my_errno_t_code"});
@@ -2445,18 +2408,18 @@ void My_logger::my_create_time_struct(struct tm& my_current_time)
 
     if ( my_errno_t_code )
     {
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_parameters_stack.push({L"שגיאה בהמרת הזמן",
+        my_error.my_parameters_stack.push({L"שגיאה בהמרת הזמן",
                                                   my_errno_t_code});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
     }
 
-    my_error_handler.my_error_stack.pop(); // my_errno_t_code.
+    my_error.my_error_stack.pop(); // my_errno_t_code.
 }
 
 
@@ -2519,7 +2482,7 @@ void My_logger::my_add_year(signed int& my_date_time_digits,
     my_log_file_name += {my_temp_wstring};
 
     // הוספת רווח בין התאריך לשעה.
-    my_error_handler.my_add_space(my_log_file_name);
+    my_error.my_add_space(my_log_file_name);
 }
 
 
@@ -2571,12 +2534,12 @@ void My_logger::my_add_seconds(signed int& my_date_time_digits,
 
 
 // מנהל את תהליך הכתיבה לקובץ.
-void My_logger::my_write_to_log_file()
+void My_logger::my_write_to_log_file(void)
 {
-    my_error_handler.my_internal_error_counter = {6};
+    my_error.my_internal_error_counter = {6};
 
     // קביעת מוד פתיחת הקובץ לאיפוס קובץ קיים.
-    my_error_handler.my_error_stack.push({__FILE__,
+    my_error.my_error_stack.push({__FILE__,
                                          __FUNCTION__,
                                          __LINE__,
                                          L"my_mode"});
@@ -2591,7 +2554,7 @@ void My_logger::my_write_to_log_file()
 
     my_open(my_mode); // פותח את הקובץ לפי המוד הרצוי.
 
-    my_error_handler.my_error_stack.pop(); // my_mode.
+    my_error.my_error_stack.pop(); // my_mode.
 
     my_write(MY_LOG_FILE_HEADER); // כותב את הכותרת לקובץ.
 
@@ -2616,14 +2579,14 @@ void My_logger::my_open(const signed int my_mode)
         wstring my_error_code = {MY_INVALID_WSTRING};
         my_error_code = {my_check_flags()};
 
-        my_error_handler.my_parameters_stack.push({L"שגיאה בפתיחת קובץ הלוג" + my_error_code,
+        my_error.my_parameters_stack.push({L"שגיאה בפתיחת קובץ הלוג" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
     }
 }
@@ -2665,14 +2628,14 @@ void My_logger::my_write(const wstring& my_error_wstring)
         wstring my_error_code = {MY_INVALID_WSTRING};
         my_error_code = {my_check_flags()};
 
-        my_error_handler.my_parameters_stack.push({L"כתיבה לקובץ הלוג נכשלה" + my_error_code,
+        my_error.my_parameters_stack.push({L"כתיבה לקובץ הלוג נכשלה" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
     }
 }
@@ -2692,14 +2655,14 @@ void My_logger::my_close(void)
         wstring my_error_code = {MY_INVALID_WSTRING};
         my_error_code = {my_check_flags()};
 
-        my_error_handler.my_parameters_stack.push({L"שגיאה בסגירת קובץ הלוג" + my_error_code,
+        my_error.my_parameters_stack.push({L"שגיאה בסגירת קובץ הלוג" + my_error_code,
                                                   MY_NOֹ_ERRORֹ_CODE});
 
-        my_error_handler.my_error_stack.push({__FILE__,
+        my_error.my_error_stack.push({__FILE__,
                                              __FUNCTION__,
                                              __LINE__});
 
-        my_error_handler.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
                                          My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
     }
 }
