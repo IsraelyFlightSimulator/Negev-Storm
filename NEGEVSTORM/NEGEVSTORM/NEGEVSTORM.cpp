@@ -1111,6 +1111,8 @@ static My_config_option<wstring> my_wstring_options[] =
 
 // אובייקטים
 // הסדר חשוב כי יש תלות באתחולים של הבנאים.
+My_initializer my_initializer = {};
+
 My_system_requirements my_system_requirements = {};
 
 My_logger my_logger = {};
@@ -1146,17 +1148,10 @@ TCHAR szWindowClass[ MAX_LOADSTRING ]; // the main window class name
 
 
 // הגדרות פונקציות.
-// בנאי.
 // הדבר הראשון הוא לבדוק התאמה מינימלית לדרישות המערכת.
 // לא יכול לדווח שגיאות כי הבנאי של מערכת השגיאות טרם רץ.
-My_system_requirements::My_system_requirements(void)
+My_system_requirements::My_system_requirements( void )
 {
-    // אתחולים קריטיים.
-// HACK
-    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
-    // ללא שורה זו הקובץ יצא ריק !
-    locale::global(locale("Hebrew_Israel.1255"));
-
     my_check_architecture();
 
     my_check_compiler_version();
@@ -1166,118 +1161,141 @@ My_system_requirements::My_system_requirements(void)
 
 
 // בודק את ארכיטקטורת המערכת.
-void My_system_requirements::my_check_architecture(void)
+void My_system_requirements::my_check_architecture( void )
 {
     // ארכיטקטורת 32 ביט ומינימום פנטיום פרו.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(_M_IX86);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
     static_assert( _M_IX86 >= 600,
-                  "X86 only" );
+                   "X86 only" );
 }
 
 
 // בודק גירסת מהדר מינימלית.
-void My_system_requirements::my_check_compiler_version(void)
+void My_system_requirements::my_check_compiler_version( void )
 {
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(_M_IX86);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
     static_assert( _MSC_VER >= MY_MSVS_VERSION,
-                  "Use VS2013 or later" );
+                   "Use VS2013 or later" );
 }
 
 
 // בודק שהגדלים של המשתנים הם כפי שמוגדרים לגרסה הנוכחית של ויז'ואל סטודיו.
-void My_system_requirements::my_check_POD_sizes(void)
+void My_system_requirements::my_check_POD_sizes( void )
 {
     // http://msdn.microsoft.com/en-us/library/cc953fe1(v=vs.140).aspx
-    My_check_type_size<bool, 1>();
-    My_check_type_size<char, 1>();
-    My_check_type_size<wchar_t, 2>();
-    My_check_type_size<short, 2>();
-    My_check_type_size<int, 4>();
-    My_check_type_size<long, 4>();
-    My_check_type_size<float, 4>();
-    My_check_type_size<long long, 8>();
-    My_check_type_size<double, 8>();
-    My_check_type_size<long double, 8>();
+    My_check_type_size< bool,
+                        1 >();
+    My_check_type_size< char,
+                        1 >();
+    My_check_type_size< wchar_t,
+                        2 >();
+    My_check_type_size< short,
+                        2 >();
+    My_check_type_size< int,
+                        4 >();
+    My_check_type_size< long,
+                        4 >();
+    My_check_type_size< float,
+                        4 >();
+    My_check_type_size< long long,
+                        8 >();
+    My_check_type_size< double,
+                        8 >();
+    My_check_type_size< long double,
+                        8 >();
+}
+
+
+// בנאי.
+// אתחולים קריטיים.
+My_initializer::My_initializer( void )
+{
+    // HACK
+    // מגדיר את השפה כי ברירת המחדל היא באנגלית.
+    // ללא שורה זו הקובץ יצא ריק !
+    locale::global(locale( "Hebrew_Israel.1255" ));
 }
 
 
 // בנאי
-My_logger::My_logger(void)
+My_logger::My_logger( void )
 {
     // מאתחל את כל משתני המחלקה.
     my_log_file = {};
 
-    locale my_locale(locale::classic(), new codecvt_utf8<wchar_t>);
+    // HACK האם צריך ?
+    locale my_locale( locale::classic(),
+                      new codecvt_utf8< wchar_t > );
 
     // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aimbue);k(ostream%2Fstd%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ofstream%3A%3Aimbue);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aimbue);k(std%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ios%3A%3Aimbue);k(imbue);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_log_file.imbue(my_locale);
+    my_log_file.imbue( my_locale );
 
-    my_log_file_name = {MY_LOG_FILE_FOLDER};
+    my_log_file_name = { MY_LOG_FILE_FOLDER };
 
-    my_is_log_file_initialized = {false};
+    my_is_log_file_initialized = { false };
 
     // אין צורך לאתחל קובץ לוג פה. קובץ יאותחל רק בשימוש ראשון.
 }
 
 
 // בנאי
-My_error::My_error(void)
+My_error::My_error( void )
 {
     // מאתחל את כל משתני המחלקה.
     my_error_stack = {};
 
     my_parameters_stack = {};
 
-    my_handle_code = {nullptr};
+    my_handle_code = { nullptr };
 
-    my_internal_error_counter = {0}; // אין צורך לבדוק טווח.
+    my_internal_error_counter = { 0 }; // אין צורך לבדוק טווח.
 
-    my_internal_error = {false};
+    my_internal_error = { false };
 
-    my_final_error_wstring = {L""};
+    my_final_error_wstring = { L"" };
 
 
     // מבצע בדיקות חיוניות.
-    my_check_another_instance();
+    my_check_for_another_instance();
 
     my_check_for_memory_leaks();
 };
 
 
 // האם יש עותק נוסף של הסימולטור בזכרון.
-void My_error::my_check_another_instance(void)
+void My_error::my_check_for_another_instance( void )
 {
     // מייצר אירוע יחודי.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(synchapi%2FCreateEventW);k(CreateEventW);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_handle_code = {CreateEventW(nullptr,
-                                   true,
-                                   false,
-                                   MY_PROJECTS_NAME_LPCWSTR)};
+    my_handle_code = { CreateEventW( nullptr,
+                                     true,
+                                     false,
+                                     MY_PROJECTS_NAME_LPCWSTR )};
 
     // שומר את קוד השגיאה שהחזירה הפונקציה.
     // חייב להיות מיד אחרי הפונקציה ולכן אין בדיקת טווח למשתנה.
-    DWORD my_last_error_code = {MY_INVALID_UNSIGNED_INT};
+    DWORD my_last_error_code = { MY_INVALID_UNSIGNED_INT };
 
     // http://msdn.microsoft.com/en-us/library/ms679360(v=vs.85).aspx
-    my_last_error_code = {GetLastError()};
+    my_last_error_code = { GetLastError() };
 
     // בודק אם הפונקציה נכשלה.
     if ( not my_handle_code )
     {
         // ממיר סוג כי המחסנית היא מסוג שלם.
-        signed int my_temp_int = {MY_INVALID_SIGNED_INT};
-        my_temp_int = {static_cast<signed int>( my_last_error_code )};
+        signed int my_temp_int = { MY_INVALID_SIGNED_INT };
+        my_temp_int = { static_cast< signed int >( my_last_error_code ) };
 
         // דוחף את הודעת השגיאה למחסנית.
         // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(stack%2Fstd%3A%3Astack%3A%3Apush);k(std%3A%3Astack%3A%3Apush);k(push);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-        my_parameters_stack.push({L"יצירת אירוע נכשלה",
-                                 my_temp_int});
+        my_parameters_stack.push( { L"יצירת אירוע נכשלה",
+                                    my_temp_int } );
 
         // דוחף את נתוני השגיאה למחסנית.
         // אין צורך לדחוף את הסיבה.
-        my_error_stack.push({__FILE__,
-                            __FUNCTION__,
-                            __LINE__});
+        my_error_stack.push( { __FILE__,
+                               __FUNCTION__,
+                               __LINE__ } );
 
         // מדווח את השגיאה עם ברירות המחדל שזה להציג ולתעד.
         my_report_error();
@@ -1288,58 +1306,58 @@ void My_error::my_check_another_instance(void)
     {
         // אין צורך לדחוף את נתוני השגיאה למחסנית.
 
-        my_parameters_stack.push({L"הסימולטור כבר רץ ולכן יסגר",
-                                 MY_NOֹ_ERRORֹ_CODE});
+        my_parameters_stack.push( { L"הסימולטור כבר רץ ולכן יסגר",
+                                    MY_NOֹ_ERRORֹ_CODE } );
 
         // זו לא באמת שגיאה ולכן אין מה להציג או לתעד.
-        my_report_error(My_error::MY_DISPLAY_ERROR::MY_DONT_DISPLAY_ERROR,
-                        My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
+        my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_NOT_DISPLAY_ERROR,
+                         My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR );
     }
 }
 
 
 // בודק נזילות זכרון.
-void My_error::my_check_for_memory_leaks(void)
+void My_error::my_check_for_memory_leaks( void )
 {
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(crtdbg%2F_CrtSetBreakAlloc);k(_CrtSetBreakAlloc);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    _CrtSetBreakAlloc(739752); // לא מבין מה משמעות המספר בסוגריים.
+    _CrtSetBreakAlloc( 739752 ); // לא מבין מה משמעות המספר בסוגריים.
 
-    my_error_stack.push({__FILE__,
-                         __FUNCTION__,
-                         __LINE__,
-                         L"my_temp_int"});
+    my_error_stack.push( { __FILE__,
+                           __FUNCTION__,
+                           __LINE__,
+                           L"my_temp_int" } );
 
     // הכנת דיגלוני השגיאה.
-    My_sub_range<signed int,
-                 MY_INVALID_SIGNED_INT,
-                 MY_MAXIMUM_DEBUG_ENUM> my_temp_int;
+    My_sub_range< signed int,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_DEBUG_ENUM > my_temp_int;
 
-    my_temp_int = {_CRTDBG_LEAK_CHECK_DF bitor
-                   _CRTDBG_ALLOC_MEM_DF bitor
-                   _CRTDBG_DELAY_FREE_MEM_DF bitor
-                   0};
+    my_temp_int = { _CRTDBG_LEAK_CHECK_DF bitor
+                    _CRTDBG_ALLOC_MEM_DF bitor
+                    _CRTDBG_DELAY_FREE_MEM_DF bitor
+                    0 };
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(crtdbg%2F_CrtSetDbgFlag);k(_CrtSetDbgFlag);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    _CrtSetDbgFlag(my_temp_int);
+    _CrtSetDbgFlag( my_temp_int );
 
     my_error_stack.pop(); // my_temp_int.
 }
 
 
 // בנאי
-My_coprocessor::My_coprocessor(void)
+My_coprocessor::My_coprocessor( void )
 {
-    my_error.my_error_stack.push({__FILE__,
-                                  __FUNCTION__,
-                                  __LINE__});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__ } );
 
     my_chop();
 
     my_error.my_error_stack.pop(); // my_chop.
 
-    my_error.my_error_stack.push({__FILE__,
-                                  __FUNCTION__,
-                                  __LINE__});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__ } );
 
     my_accuracy();
 
@@ -1348,31 +1366,31 @@ My_coprocessor::My_coprocessor(void)
 
 
 // מקנפג את המעבד המתמאטי לעגל את התוצאה.
-void My_coprocessor::my_chop(void)
+void My_coprocessor::my_chop( void )
 {
     // לא נעשה שימוש בערך הזה.
-    unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
+    unsigned int my_control_word = { MY_INVALID_UNSIGNED_INT };
 
-    my_error.my_error_stack.push({__FILE__,
-                                  __FUNCTION__,
-                                  __LINE__,
-                                  L"my_errno_t_code"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_errno_t_code" } );
 
-    My_sub_range<errno_t,
-                 MY_INVALID_SIGNED_INT, 
-                 MY_MAXIMUM_ERRNO_T_CODE> my_errno_t_code;
+    My_sub_range< errno_t,
+                  MY_INVALID_SIGNED_INT, 
+                  MY_MAXIMUM_ERRNO_T_CODE > my_errno_t_code;
 
-    my_errno_t_code = {MY_INVALID_SIGNED_INT};
+    my_errno_t_code = { MY_INVALID_SIGNED_INT };
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(float%2F_controlfp_s);k(_controlfp_s);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_errno_t_code = {_controlfp_s(&my_control_word,
-                                    _RC_CHOP,
-                                    MCW_RC)};
+    my_errno_t_code = { _controlfp_s( &my_control_word,
+                                      _RC_CHOP,
+                                      MCW_RC ) };
 
     if ( my_errno_t_code )
     {
-        my_error.my_parameters_stack.push({L"שגיאת עיגול של המעבד המתמטי",
-                                           my_errno_t_code});
+        my_error.my_parameters_stack.push( { L"שגיאת עיגול של המעבד המתמטי",
+                                             my_errno_t_code } );
 
         my_error.my_report_error();
     }
@@ -1382,29 +1400,29 @@ void My_coprocessor::my_chop(void)
 
 
 // דיוק 24 ביט.
-void My_coprocessor::my_accuracy(void)
+void My_coprocessor::my_accuracy( void )
 {
-    unsigned int my_control_word = {MY_INVALID_UNSIGNED_INT};
+    unsigned int my_control_word = { MY_INVALID_UNSIGNED_INT };
 
-    my_error.my_error_stack.push({__FILE__,
-                                  __FUNCTION__,
-                                  __LINE__,
-                                  L"my_errno_t_code"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_errno_t_code" } );
 
-    My_sub_range<errno_t,
-                 MY_INVALID_SIGNED_INT,
-                 MY_MAXIMUM_ERRNO_T_CODE> my_errno_t_code;
+    My_sub_range< errno_t,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_ERRNO_T_CODE > my_errno_t_code;
 
-    my_errno_t_code = {MY_INVALID_SIGNED_INT};
+    my_errno_t_code = { MY_INVALID_SIGNED_INT };
 
-    my_errno_t_code = {_controlfp_s(&my_control_word,
-                                    _PC_24,
-                                    MCW_PC)};
+    my_errno_t_code = { _controlfp_s( &my_control_word,
+                                      _PC_24,
+                                      MCW_PC)};
 
     if ( my_errno_t_code )
     {
-        my_error.my_parameters_stack.push({L"שגיאת 24 ביט של המעבד המתמטי",
-                                           my_errno_t_code});
+        my_error.my_parameters_stack.push( { L"שגיאת 24 ביט של המעבד המתמטי",
+                                             my_errno_t_code } );
 
         my_error.my_report_error();
     }
@@ -1414,24 +1432,26 @@ void My_coprocessor::my_accuracy(void)
 
 
 // בנאי
-My_configuration_file::My_configuration_file(void)
+My_configuration_file::My_configuration_file( void )
 {
     my_config_file = {};
 
+    // HACK
     // מגדיר את השפה כי ברירת המחדל היא באנגלית.
     // ללא שורה זו הקובץ יצא ריק !
-    //locale my_locale(locale::classic(), new codecvt_utf8<wchar_t>);
+    //locale my_locale( locale::classic(), 
+    //                  new codecvt_utf8< wchar_t > );
 
     // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aimbue);k(ostream%2Fstd%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ofstream%3A%3Aimbue);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aimbue);k(std%3A%3Abasic_ostream%3A%3Aimbue);k(std%3A%3Abasic_ios%3A%3Aimbue);k(imbue);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    //my_config_file.imbue(my_locale);
+    //my_config_file.imbue( my_locale );
 }
 
 
 // מאתחל הכל.
-void my_initialize_everything(void)
+void my_initialize_everything( void )
 {
 #ifndef NEGEVSTORM
-    FalconDisplay.displayFullScreen = {FALSE};
+    FalconDisplay.displayFullScreen = { FALSE };
 #endif;
 
     my_configuration_file.my_read();
@@ -1439,7 +1459,7 @@ void my_initialize_everything(void)
 
 
 // קורא את קובץ התצורה.
-void My_configuration_file::my_read(void)
+void My_configuration_file::my_read( void )
 {
     my_open();
 
@@ -1450,161 +1470,162 @@ void My_configuration_file::my_read(void)
 
 
 // קורא את קובץ ההגדרות.
-void My_configuration_file::my_open(void)
+void My_configuration_file::my_open( void )
 {
     // בונה את הנתיב עם שם הקובץ.
-    wstring my_config_file_path = {MY_INVALID_WSTRING};
-    my_config_file_path = {my_data_directory};
+    wstring my_config_file_path = { MY_INVALID_WSTRING };
+    my_config_file_path = { my_data_directory };
 
-    my_config_file_path += {MY_CONFIG_FILE_NAME};
+    my_config_file_path += { MY_CONFIG_FILE_NAME };
 
-    my_error.my_error_stack.push({__FILE__,
-                                          __FUNCTION__,
-                                          __LINE__,
-                                          L"my_mode"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_mode" } );
 
     My_sub_range< signed int,
                   MY_INVALID_SIGNED_INT,
-                  MY_MAXIMUM_WIOS_ENUM> my_mode;
+                  MY_MAXIMUM_WIOS_ENUM > my_mode;
 
     // קובע את מוד הגישה לקובץ.
-    my_mode = {MY_INVALID_SIGNED_INT};
-    my_mode = {wios::in};
+    my_mode = { MY_INVALID_SIGNED_INT };
+    my_mode = { wios::in };
 
     // פותח את הקובץ.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Aopen);k(std%3A%3Abasic_ofstream%3A%3Aopen);k(open);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_config_file.open(my_config_file_path,
-                        my_mode);
+    my_config_file.open( my_config_file_path,
+                         my_mode );
 
     my_error.my_error_stack.pop(); // my_mode.
 
     // בודק שהקובץ נפתח בהצלחה.
-    bool my_temp_bool = {false};
+    bool my_temp_bool = { false };
+
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Ais_open);k(std%3A%3Abasic_ofstream%3A%3Ais_open);k(is_open);k(DevLang-C%2B%2B);k(TargetOS-Windows
-    my_temp_bool = {my_config_file.is_open()};
+    my_temp_bool = { my_config_file.is_open() };
 
     if ( not my_temp_bool )
     {
         // בודק מדוע נכשלה פתיחת הקובץ.
-        wstring my_error_code = {MY_INVALID_WSTRING};
-        my_error_code = {my_check_flags()};
+        wstring my_error_code = { MY_INVALID_WSTRING };
+        my_error_code = { my_check_flags() };
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__ } );
 
-        my_error.my_parameters_stack.push({L"שגיאה בפתיחת קובץ התצורה" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"שגיאה בפתיחת קובץ התצורה" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR );
     }
 }
 
 
 // בודק מדוע נכשלה קריאת הקובץ.
-void My_configuration_file::check_reading_was_OK(void)
+void My_configuration_file::my_check_reading_was_OK( void )
 {
-    wstring my_error_code = {MY_INVALID_WSTRING};
-    my_error_code = {my_check_flags()};
+    wstring my_error_code = { MY_INVALID_WSTRING };
+    my_error_code = { my_check_flags() };
 
     if ( my_error_code not_eq L"" )
     {
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__});
 
-        my_error.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"שגיאה בקריאת קובץ התצורה" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR );
     }
 }
 
 
 // מפענח את קובץ התצורה.
-void My_configuration_file::my_parse(void)
+void My_configuration_file::my_parse( void )
 {
     // סופר כמה שורות נקראו מהקובץ למקרה של שגיאה.
-    my_error.my_error_stack.push({__FILE__,
-                                  __FUNCTION__,
-                                  __LINE__,
-                                  L"my_line_number"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_line_number" } );
 
-    My_sub_range<signed int,
-                 MY_INVALID_SIGNED_INT,
-                 MY_MAXIMUM_CONFIG_FILE_LINES> my_line_number;
+    My_sub_range< signed int,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_CONFIG_FILE_LINES > my_line_number;
 
 // לפה קופצים כדי לקרוא את השורה הבאה.
 my_next_line:
 
     // קורא את הקובץ כל זמן שלא הגענו לסוף הקובץ.
-    bool my_is_eof_reached = {false};
+    bool my_is_eof_reached = { false };
 
     // דבר ראשון זה בדיקה שלא הגענו לסוף הקובץ.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ifstream%3A%3Aeof);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Aeof);k(std%3A%3Abasic_ifstream%3A%3Aeof);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aeof);k(std%3A%3Abasic_ios%3A%3Aeof);k(std%3A%3Aios_base%3A%3Aeof);k(eof);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_is_eof_reached = {my_config_file.eof()};
+    my_is_eof_reached = { my_config_file.eof() };
 
     if ( not my_is_eof_reached )
     {
         // קורא את הקובץ שורה אחר שורה.
-        wstring my_command = {MY_INVALID_WSTRING};
+        wstring my_command = { MY_INVALID_WSTRING };
 
         // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Agetline);k(std%3A%3Agetline);k(getline);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-        getline(my_config_file,
-                my_command);
+        getline( my_config_file,
+                 my_command );
         
-        check_reading_was_OK();
+        my_check_reading_was_OK();
 
         // מקדם את מונה השורות מהקובץ.
         my_line_number++;
 
         // מדלג על שורות של הערות.
-        if ( my_is_comment_line(my_command) )
+        if ( my_is_comment_line( my_command ) )
         {
             goto my_next_line;
         }
 
         // בודק את אורך השורה שנקראה מהקובץ.
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__,
-                                             L"my_line_length"});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__,
+                                        L"my_line_length" } );
 
-        My_sub_range<unsigned int,
-                     MY_INVALID_UNSIGNED_INT,
-                     MAX_PATH> my_line_length;
+        My_sub_range< unsigned int,
+                      MY_INVALID_UNSIGNED_INT,
+                      MAX_PATH > my_line_length;
 
-        my_line_length = {my_command.length()};
+        my_line_length = { my_command.length() };
 
         // בדיקה אם אורך השורה עומד במינימום הנדרש.
-        const unsigned int MY_MINIMUM_ALLOWED_CHARACTERS = {3U};
+        const unsigned int MY_MINIMUM_ALLOWED_CHARACTERS = { 3U };
 
         if ( my_line_length < MY_MINIMUM_ALLOWED_CHARACTERS )
         {
-            my_exit_with_error(my_line_number);
+            my_exit_with_error( my_line_number );
         }
 
         // קורא את השורה של הערך.
-        wstring my_value = {MY_INVALID_WSTRING};
+        wstring my_value = { MY_INVALID_WSTRING };
 
-        getline(my_config_file,
-                my_value);
+        getline( my_config_file,
+                 my_value );
 
-        check_reading_was_OK();
+        my_check_reading_was_OK();
 
         my_line_number++;
 
         // פה אסור שתהיה הערה.
-        if ( my_is_comment_line(my_value) )
+        if ( my_is_comment_line( my_value ) )
         {
-            my_exit_with_error(my_line_number);
+            my_exit_with_error( my_line_number );
         }
 
         // בודק את אורך השורה שנקראה מהקובץ.
-        my_line_length = {MY_INVALID_UNSIGNED_INT};
-        my_line_length = {my_value.length()};
+        my_line_length = { MY_INVALID_UNSIGNED_INT };
+        my_line_length = { my_value.length() };
 
         // בדיקה אם אורך השורה עומד במינימום הנדרש.
         if ( my_line_length < 1 )
@@ -1615,19 +1636,19 @@ my_next_line:
         my_error.my_error_stack.pop(); // my_line_length.
 
         // דוגם את התו הראשון בשורה. לפי תו זה ניתן לדעת את סוג המשתנה.
-        wchar_t my_first_wchar = {MY_INVALID_WCHAR_T};
-        my_first_wchar = {my_command[0]};
+        wchar_t my_first_wchar = { MY_INVALID_WCHAR_T };
+        my_first_wchar = { my_command[0] };
 
         // קורא לפונקציה המתאימה לפי סוג המשתנה.
-        bool my_temp_bool = {false};
-        my_temp_bool = {my_switch(my_first_wchar,
-                                  my_command,
-                                  my_value)};
+        bool my_temp_bool = { false };
+        my_temp_bool = { my_switch( my_first_wchar,
+                                    my_command,
+                                    my_value ) };
 
         // קופץ לשורה הבאה או החוצה לפי תוצאת החזרה.
         if ( my_temp_bool )
         {
-            my_exit_with_error(my_line_number);
+            my_exit_with_error( my_line_number );
         }
         else
         {
@@ -1638,11 +1659,11 @@ my_next_line:
 
 
 // מדלג על שורות של הערות.
-const bool My_configuration_file::my_is_comment_line(const wstring& my_line)
+const bool My_configuration_file::my_is_comment_line( const wstring& my_line )
 {
-    wchar_t my_first_wchar = {MY_INVALID_WCHAR_T};
+    wchar_t my_first_wchar = { MY_INVALID_WCHAR_T };
 
-    my_first_wchar = {my_line[0]};
+    my_first_wchar = { my_line[0] };
 
     if ( L'/' == my_first_wchar )
     {
@@ -1656,18 +1677,18 @@ const bool My_configuration_file::my_is_comment_line(const wstring& my_line)
 
 
 // הסתעפות לפי סוג הפרמטר.
-const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
-                                const wstring my_command,
-                                const wstring my_value)
+const bool My_configuration_file::my_switch( const wchar_t my_first_wchar,
+                                             const wstring my_command,
+                                             const wstring my_value )
 {
     switch ( my_first_wchar )
     {
         // שלם.
         case L'n':
         {
-            bool my_temp_bool = {false};
-            my_temp_bool = {my_set_int_options(my_command,
-                                               my_value)};
+            bool my_temp_bool = { false };
+            my_temp_bool = { my_set_int_options( my_command,
+                                                 my_value ) };
 
             if ( my_temp_bool )
             {
@@ -1678,9 +1699,9 @@ const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
         // עשרוני.
         case L'f':
         {
-            bool my_temp_bool = {false};
-            my_temp_bool = {my_set_double_options(my_command,
-                                                  my_value)};
+            bool my_temp_bool = { false };
+            my_temp_bool = { my_set_double_options( my_command,
+                                                    my_value ) };
 
             if ( my_temp_bool )
             {
@@ -1691,9 +1712,9 @@ const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
         // בינארי.
         case L'b':
         {
-            bool my_temp_bool = {false};
-            my_temp_bool = {my_set_bool_options(my_command,
-                                                my_value)};
+            bool my_temp_bool = { false };
+            my_temp_bool = { my_set_bool_options( my_command,
+                                                  my_value ) };
 
             if ( my_temp_bool )
             {
@@ -1704,9 +1725,9 @@ const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
         // מחרוזת.
         case L's':
         {
-            bool my_temp_bool = {false};
-            my_temp_bool = {my_set_wstring_options(my_command,
-                                                   my_value)};
+            bool my_temp_bool = { false };
+            my_temp_bool = { my_set_wstring_options( my_command,
+                                                     my_value ) };
 
             if ( my_temp_bool )
             {
@@ -1725,15 +1746,15 @@ const bool My_configuration_file::my_switch(const wchar_t my_first_wchar,
 
 
 // מגדיר את אופציות השלמים.
-const bool My_configuration_file::my_set_int_options(const wstring& my_command,
-                                         const wstring& my_value)
+const bool My_configuration_file::my_set_int_options( const wstring& my_command,
+                                                      const wstring& my_value )
 {
     // בונה רשימה של כל המשתנים השלמים.
-    My_config_option<signed int>* my_player_options = {my_int_options};
+    My_config_option< signed int >* my_player_options = { my_int_options };
 
     // קורא מהרשימה את שם המשתנה.
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
-    my_temp_wstring = {my_player_options->my_parameter_name};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
+    my_temp_wstring = { my_player_options->my_parameter_name };
 
     // לולאה למציאת השם.
     while ( L"" not_eq my_temp_wstring )
@@ -1741,13 +1762,13 @@ const bool My_configuration_file::my_set_int_options(const wstring& my_command,
         // האם מצאנו את מחרוזת החיפוש.
         if ( my_temp_wstring == my_command )
         {
-            signed int my_temp_int = {MY_INVALID_SIGNED_INT};
-            size_t* my_index = {nullptr};
+            signed int my_temp_int = { MY_INVALID_SIGNED_INT };
+            size_t* my_index = { nullptr };
 
             // ממיר ממחרוזת לשלם.
             // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Astoi);k(std%3A%3Astoi);k(stoi);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-            my_temp_int = {stoi(my_value,
-                                my_index)};
+            my_temp_int = { stoi( my_value,
+                                  my_index ) };
 
             // בודק שההמרה הצליחה.
             if ( my_index )
@@ -1756,7 +1777,7 @@ const bool My_configuration_file::my_set_int_options(const wstring& my_command,
             }
 
             // שומר את הערך במערך.
-            *my_player_options->my_parameter_value = {my_temp_int};
+            *my_player_options->my_parameter_value = { my_temp_int };
 
             // סיימנו בהצלחה ולכן אפשר לעבור לשורה הבאה.
             return EXIT_SUCCESS;
@@ -1765,8 +1786,8 @@ const bool My_configuration_file::my_set_int_options(const wstring& my_command,
         my_player_options++;
 
         // קוראים את הערך הבא.
-        my_temp_wstring = {MY_INVALID_WSTRING};
-        my_temp_wstring = {my_player_options->my_parameter_name};
+        my_temp_wstring = { MY_INVALID_WSTRING };
+        my_temp_wstring = { my_player_options->my_parameter_name };
     }
     // לא מצאנו ולכן זו שגיאה.
     return EXIT_FAILURE;
@@ -1774,62 +1795,62 @@ const bool My_configuration_file::my_set_int_options(const wstring& my_command,
 
 
 // מגדיר את אופציות השברים.
-const bool My_configuration_file::my_set_double_options(const wstring& my_command,
-                                            const wstring& my_value)
+const bool My_configuration_file::my_set_double_options( const wstring& my_command,
+                                                         const wstring& my_value )
 {
-    My_config_option<double>* my_player_options = {my_double_options};
+    My_config_option< double >* my_player_options = { my_double_options };
 
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
-    my_temp_wstring = {my_player_options->my_parameter_name};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
+    my_temp_wstring = { my_player_options->my_parameter_name };
 
     while ( L"" not_eq my_temp_wstring )
     {
         if ( my_temp_wstring == my_command )
         {
-            double my_temp_double = {MY_INVALID_DOUBLE};
-            size_t* my_index = {nullptr};
+            double my_temp_double = { MY_INVALID_DOUBLE };
+            size_t* my_index = { nullptr };
 
             // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Astof);k(std%3A%3Astof);k(stof);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-            my_temp_double = {stof(my_value,
-                                   my_index)};
+            my_temp_double = { stof( my_value,
+                                     my_index ) };
 
             if ( my_index )
             {
                 return EXIT_FAILURE;
             }
 
-            *my_player_options->my_parameter_value = {my_temp_double};
+            *my_player_options->my_parameter_value = { my_temp_double };
 
             return EXIT_SUCCESS;
         }
         my_player_options++;
 
-        my_temp_wstring = {MY_INVALID_WSTRING};
-        my_temp_wstring = {my_player_options->my_parameter_name};
+        my_temp_wstring = { MY_INVALID_WSTRING };
+        my_temp_wstring = { my_player_options->my_parameter_name };
     }
     return EXIT_FAILURE;
 }
 
 
 // מגדיר את אופציות הדגלים.
-const bool My_configuration_file::my_set_bool_options(const wstring& my_command,
-                                          const wstring& my_value)
+const bool My_configuration_file::my_set_bool_options( const wstring& my_command,
+                                                       const wstring& my_value )
 {
-    My_config_option<bool>* my_player_options = {my_bool_options};
+    My_config_option< bool >* my_player_options = { my_bool_options };
 
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
-    my_temp_wstring = {my_player_options->my_parameter_name};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
+    my_temp_wstring = { my_player_options->my_parameter_name };
 
     while ( L"" not_eq my_temp_wstring )
     {
         if ( my_temp_wstring == my_command )
         {
-            signed int my_temp_int = {MY_INVALID_SIGNED_INT};
-            size_t* my_index = {nullptr};
+            signed int my_temp_int = { MY_INVALID_SIGNED_INT };
+            size_t* my_index = { nullptr };
 
             // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Astoi);k(std%3A%3Astoi);k(stoi);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-            my_temp_int = {stoi(my_value,
-                                my_index)};
+            my_temp_int = { stoi( my_value,
+                                  my_index ) };
 
             if ( my_index )
             {
@@ -1838,51 +1859,51 @@ const bool My_configuration_file::my_set_bool_options(const wstring& my_command,
 
             if ( my_temp_int )
             {
-                *my_player_options->my_parameter_value = {true};
+                *my_player_options->my_parameter_value = { true };
             }
             else
             {
-                *my_player_options->my_parameter_value = {false};
+                *my_player_options->my_parameter_value = { false };
             }
             return EXIT_SUCCESS;
         }
         my_player_options++;
 
-        my_temp_wstring = {MY_INVALID_WSTRING};
-        my_temp_wstring = {my_player_options->my_parameter_name};
+        my_temp_wstring = { MY_INVALID_WSTRING };
+        my_temp_wstring = { my_player_options->my_parameter_name };
     }
     return EXIT_FAILURE;
 }
 
 
 // מגדיר את אופציות המחרוזות.
-const bool My_configuration_file::my_set_wstring_options(const wstring& my_command,
-                                             const wstring& my_value)
+const bool My_configuration_file::my_set_wstring_options( const wstring& my_command,
+                                                          const wstring& my_value )
 {
-    My_config_option<wstring>* my_player_options = {my_wstring_options};
+    My_config_option< wstring >* my_player_options = { my_wstring_options };
 
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
-    my_temp_wstring = {my_player_options->my_parameter_name};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
+    my_temp_wstring = { my_player_options->my_parameter_name };
 
     while ( L"" not_eq my_temp_wstring )
     {
         if ( my_temp_wstring == my_command )
         {
-            *my_player_options->my_parameter_value = {my_value};
+            *my_player_options->my_parameter_value = { my_value };
 
             return EXIT_SUCCESS;
         }
         my_player_options++;
 
-        my_temp_wstring = {MY_INVALID_WSTRING};
-        my_temp_wstring = {my_player_options->my_parameter_name};
+        my_temp_wstring = { MY_INVALID_WSTRING };
+        my_temp_wstring = { my_player_options->my_parameter_name };
     }
     return EXIT_FAILURE;
 }
 
 
 // סוגר את קובץ התצורה.
-void My_configuration_file::my_close(void)
+void My_configuration_file::my_close( void )
 {
     // מאפס את דיגלוני השגיאה.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ifstream%3A%3Aclear);k(istream%2Fstd%3A%3Abasic_istream%3A%3Aclear);k(std%3A%3Abasic_ifstream%3A%3Aclear);k(ios%2Fstd%3A%3Abasic_ios%3A%3Aclear);k(std%3A%3Abasic_istream%3A%3Aclear);k(std%3A%3Abasic_ios%3A%3Aclear);k(clear);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
@@ -1892,63 +1913,63 @@ void My_configuration_file::my_close(void)
     my_config_file.close(); // כדי שנוכל להוסיף טקסט מאוחר יותר.
 
     // בודק אם הסגירה הצליחה.
-    bool my_temp_bool = {false};
+    bool my_temp_bool = { false };
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Agood);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Agood);k(std%3A%
-    my_temp_bool = {my_config_file.good()};
+    my_temp_bool = { my_config_file.good() };
 
     if ( not my_temp_bool )
     {
-        wstring my_error_code = {MY_INVALID_WSTRING};
-        my_error_code = {my_check_flags()};
+        wstring my_error_code = { MY_INVALID_WSTRING };
+        my_error_code = { my_check_flags() };
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__ } );
 
-        my_error.my_parameters_stack.push({L"סגירת קובץ תצורה נכשלה" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"סגירת קובץ תצורה נכשלה" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR );
     }
 }
 
 
 // יוצא עם הודעת שגיאה.
-void My_configuration_file::my_exit_with_error(const signed int my_line_number)
+void My_configuration_file::my_exit_with_error( const signed int my_line_number )
 {
     my_error.my_error_stack.pop(); // my_line_number.
 
-    my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__,
-                                         L"my_error_reading_config"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_error_reading_config" } );
 
-    my_error_reading_config(my_line_number);
+    my_error_reading_config( my_line_number );
 }
 
 
 // שגיאה בקריאת קובץ התצורה.
-void My_configuration_file::my_error_reading_config(const signed int my_line_number)
+void My_configuration_file::my_error_reading_config( const signed int my_line_number )
 {
-    my_error.my_parameters_stack.push({L"שגיאה בקריאת קובץ התצורה בשורה",
-                                              my_line_number});
+    my_error.my_parameters_stack.push( { L"שגיאה בקריאת קובץ התצורה בשורה",
+                                         my_line_number } );
 
-    my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                     My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR);
+    my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                              My_error::MY_LOG_ERROR::MY_DO_LOG_ERROR );
 }
 
 
 // בודק דיגלוני שגיאות של קובץ.
-const wstring My_configuration_file::my_check_flags(void)
+const wstring My_configuration_file::my_check_flags( void )
 {
     // מוסיף את דיגלוני השגיאות.
-    wstring my_error_code = {L""};
+    wstring my_error_code = { L"" };
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Abad);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Abad);k(std%3A%3Abasic_ofstream%3A%3Abad);k(ios%2Fstd%3A%
     if ( my_config_file.bad() )
     {
-        my_error_code = {L" BAD "};
+        my_error_code = { L" BAD " };
     }
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(fStream%2Fstd%3A%3Abasic_ofstream%3A%3Afail);k(xiosbase%2Fstd%3A%3Aios_base%3A%3Afail);k(std%3A%3Abasic_ofstream%3A%3Afail);k(ios%2Fstd%3A%3Abasic_ios%3A%3Afail);k(std%3A%3Abasic_ios%3A%3Afail);k(std%3A%3Aios_base%3A%3Afail);k(fail);k(DevLang-C%2B%2B);k(TargetOS-Windows)&
@@ -1963,8 +1984,8 @@ const wstring My_configuration_file::my_check_flags(void)
 
 // מצפצף, מציג הודעת שגיאה ויוצא.
 // ברירת המחדל היא להציג את השגיאה ולתעד אותה בקובץ הלוג.
-void My_error::my_report_error(MY_DISPLAY_ERROR my_display_error,
-                               MY_LOG_ERROR my_log_error)
+void My_error::my_report_error( MY_DISPLAY_ERROR my_display_error,
+                                MY_LOG_ERROR my_log_error )
 {
     // האם כבר קרתה שגיאה פנימית.
     if ( my_internal_error and
@@ -1974,10 +1995,10 @@ void My_error::my_report_error(MY_DISPLAY_ERROR my_display_error,
         my_catastrophic_error();
     }
 
-    my_internal_error = {true}; // כל שגיאה מעכשיו היא שגיאה פנימית ולכן לא ניתן לדווח אותה.
+    my_internal_error = { true }; // כל שגיאה מעכשיו היא שגיאה פנימית ולכן לא ניתן לדווח אותה.
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(winuser%2FMessageBeep);k(MessageBeep);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    MessageBeep(MB_ICONERROR); // לא חשוב לבדוק קוד חזרה.
+    MessageBeep( MB_ICONERROR ); // לא חשוב לבדוק קוד חזרה.
 
     // אם רוצים להציג הודעת שגיאה מפורטת, צריך להכין אותה. אם לא, הצגה ויציאה.
     if ( MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR == my_display_error )
@@ -1988,7 +2009,7 @@ void My_error::my_report_error(MY_DISPLAY_ERROR my_display_error,
         if ( MY_LOG_ERROR::MY_DO_LOG_ERROR == my_log_error )
         {
             // עדכון פרטי השגיאה בקובץ הלוג.
-            my_logger.my_update(my_final_error_wstring);
+            my_logger.my_update( my_final_error_wstring );
         }
 
         my_add_contact_information();
@@ -2008,117 +2029,117 @@ void My_error::my_report_error(MY_DISPLAY_ERROR my_display_error,
 
 
 // מציג את הודעת השגיאה.
-void My_error::my_display_error_message(void)
+void My_error::my_display_error_message( void )
 {
-    bool my_is_stack_empty = {false};
+    bool my_is_stack_empty = { false };
 
     // לולאה שרצה כל זמן שמחסנית השגיאות מלאה.
     do
     {
-        my_internal_error_counter = {1}; // קוד שגיאה יחודי לכל נקודה בה עלולה לקרות שגיאה.
+        my_internal_error_counter = { 1 }; // קוד שגיאה יחודי לכל נקודה בה עלולה לקרות שגיאה.
 
-        my_error_stack.push({__FILE__,
-                            __FUNCTION__,
-                            __LINE__,
-                            L"my_input_value"});
+        my_error_stack.push( { __FILE__,
+                               __FUNCTION__,
+                               __LINE__,
+                                L"my_input_value" } );
 
-        My_sub_range<signed int,
-            MY_INVALID_SIGNED_INT,
-            MY_MAXIMUM_SYSTEM_DWORD_ERROR_CODE> my_input_value;
+        My_sub_range< signed int,
+                      MY_INVALID_SIGNED_INT,
+                      MY_MAXIMUM_SYSTEM_DWORD_ERROR_CODE > my_input_value;
 
         // הוצאת נתוני השגיאה מתוך המחסנית.
         // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(stack%2Fstd%3A%3Astack%3A%3Aempty);k(std%3A%3Astack%3A%3Aempty);k(empty);k(DevLang-C%2B%2B);k(TargetOS-W
-        my_is_stack_empty = {my_parameters_stack.empty()};
+        my_is_stack_empty = { my_parameters_stack.empty() };
 
         if ( not my_is_stack_empty )
         {
             // https://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(stack%2Fstd%3A%3Astack%3A%3Atop);k(std%3A%3Astack%3A%3Atop);k(top);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
             my_final_error_wstring += { my_parameters_stack.top().my_error_message };
 
-            my_input_value = {my_parameters_stack.top().my_error_code};
+            my_input_value = { my_parameters_stack.top().my_error_code };
 
             // מוסיף רווח הפרדה בין מילים.
-            my_add_space(my_final_error_wstring);
+            my_add_space( my_final_error_wstring );
         }
 
         // ממיר את ערך הכניסה ממספר למחרוזת לרחבה.
-        wstring my_temp_wstring = {MY_INVALID_WSTRING};
+        wstring my_temp_wstring = { MY_INVALID_WSTRING };
 
         // שגיאה שהיא 0 לא מעניינת.
         if ( my_input_value )
         {
             // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(string%2Fstd%3A%3Ato_wstring);k(std%3A%3Ato_wstring);k(to_wstring);k(DevLang-C%2B%2B
-            my_temp_wstring = {to_wstring(my_input_value)};
+            my_temp_wstring = { to_wstring(my_input_value ) };
 
-            my_final_error_wstring += {my_temp_wstring};
+            my_final_error_wstring += { my_temp_wstring };
         }
 
         // מוסיף שורת הפרדה בין משפטים.
-        my_add_line(my_final_error_wstring);
+        my_add_line( my_final_error_wstring );
 
         // סיימנו עם המשתנה אז אפשר להוציא אותו מהמחסנית.
         my_error_stack.pop(); // my_input_value.
 
                               // הוצאת נתוני השגיאה מתוך המחסנית.
-        string my_temp_string = {MY_INVALID_STRING};
-        my_temp_string = {my_error_stack.top().my_source_code_file_name};
+        string my_temp_string = { MY_INVALID_STRING };
+        my_temp_string = { my_error_stack.top().my_source_code_file_name };
 
         // אין צורך לבדוק טווח כי זה משתנה מערכת.
-        signed int my_temp_int = {MY_INVALID_SIGNED_INT};
-        my_temp_int = {my_error_stack.top().my_source_code_line_number};
+        signed int my_temp_int = { MY_INVALID_SIGNED_INT };
+        my_temp_int = { my_error_stack.top().my_source_code_line_number };
 
-        string my_temp_string2 = {MY_INVALID_STRING};
-        my_temp_string2 = {my_error_stack.top().my_function_signature};
+        string my_temp_string2 = { MY_INVALID_STRING };
+        my_temp_string2 = { my_error_stack.top().my_function_signature };
 
         // מוסיף את שם הקובץ בו קרתה השגיאה.
-        my_final_error_wstring += {L"בקובץ "};
+        my_final_error_wstring += { L"בקובץ " };
 
         // ממיר את שם הקובץ ממחרוזת למחרוזת רחבה.
-        my_temp_wstring = {MY_INVALID_WSTRING};
+        my_temp_wstring = { MY_INVALID_WSTRING };
 
-        my_internal_error_counter = {2};
+        my_internal_error_counter = { 2 };
 
-        my_temp_wstring = {my_string_to_wstring(my_temp_string)};
+        my_temp_wstring = { my_string_to_wstring(my_temp_string ) };
 
-        my_final_error_wstring += {my_temp_wstring};
+        my_final_error_wstring += { my_temp_wstring };
 
-        my_add_line(my_final_error_wstring);
+        my_add_line( my_final_error_wstring );
 
         // מוסיף את מספר השורה בה קרתה השגיאה.
-        my_final_error_wstring += {L"בשורה "};
+        my_final_error_wstring += { L"בשורה " };
 
-        my_temp_wstring = {MY_INVALID_WSTRING};
-        my_temp_wstring = {to_wstring(my_temp_int)};
+        my_temp_wstring = { MY_INVALID_WSTRING };
+        my_temp_wstring = { to_wstring( my_temp_int ) };
 
-        my_final_error_wstring += {my_temp_wstring};
+        my_final_error_wstring += { my_temp_wstring };
 
-        my_add_line(my_final_error_wstring);
+        my_add_line( my_final_error_wstring );
 
         // מוסיף את שם הפונקציה בה קרתה השגיאה.
-        my_final_error_wstring += {L"בפונקציה "};
+        my_final_error_wstring += { L"בפונקציה " };
 
-        my_temp_wstring = {MY_INVALID_WSTRING};
+        my_temp_wstring = { MY_INVALID_WSTRING };
 
-        my_internal_error_counter = {3};
+        my_internal_error_counter = { 3 };
 
-        my_temp_wstring = {my_string_to_wstring(my_temp_string2)};
+        my_temp_wstring = { my_string_to_wstring( my_temp_string2 ) };
 
-        my_final_error_wstring += {my_temp_wstring};
+        my_final_error_wstring += { my_temp_wstring };
 
-        my_add_line(my_final_error_wstring);
+        my_add_line( my_final_error_wstring );
 
         // מוסיף שורת רווח בין בלוקים של שגיאה.
-        my_add_line(my_final_error_wstring);
+        my_add_line( my_final_error_wstring );
 
         my_error_stack.pop(); // פונקציית כניסה.
 
-                              // כדי למנוע ניסיון שליפה כשהמחסנית כבר ריקה.
+        // כדי למנוע ניסיון שליפה כשהמחסנית כבר ריקה.
         if ( not my_is_stack_empty )
         {
             my_parameters_stack.pop();
         }
 
-        my_is_stack_empty = {my_error_stack.empty()};
+        my_is_stack_empty = { my_error_stack.empty() };
     }
 
     while ( not my_is_stack_empty );
@@ -2126,97 +2147,97 @@ void My_error::my_display_error_message(void)
 
 
 // מוסיף סוף שורה למחרוזת.
-void My_error::my_add_line(wstring& my_input_wstring)
+void My_error::my_add_line( wstring& my_input_wstring )
 {
-    my_input_wstring += {L"\n"};
+    my_input_wstring += { L"\n" };
 }
 
 
 // ממיר מחרוזת ליוניקוד.
-const wstring My_error::my_string_to_wstring(const string& my_input_string)
+const wstring My_error::my_string_to_wstring( const string& my_input_string )
 {
     basic_string <char>::const_iterator my_input_string_begin = {};
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(xstring%2Fstd%3A%3Abasic_string%3A%3Abegin);k(std%3A%3Abasic_string%3A%3Abegin);k(be
-    my_input_string_begin = {my_input_string.begin()};
+    my_input_string_begin = { my_input_string.begin() };
 
-    basic_string <char>::const_iterator my_input_string_end = {};
+    basic_string < char >::const_iterator my_input_string_end = {};
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(xstring%2Fstd%3A%3Abasic_string%3A%3Aend);k(std%3A%3Abasic_string%3A%3Aend);k(end);k
-    my_input_string_end = {my_input_string.end()};
+    my_input_string_end = { my_input_string.end() };
 
-    my_error_stack.push({__FILE__,
-                        __FUNCTION__,
-                        __LINE__,
-                        L"my_temp_UINT"});
+    my_error_stack.push( { __FILE__,
+                           __FUNCTION__,
+                           __LINE__,
+                           L"my_temp_UINT" } );
 
-    My_sub_range<unsigned int,
-        MY_INVALID_UNSIGNED_INT,
-        MAX_PATH> my_temp_UINT;
+    My_sub_range< unsigned int,
+                  MY_INVALID_UNSIGNED_INT,
+                  MAX_PATH > my_temp_UINT;
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(xstring%2Fstd%3A%3Abasic_string%3A%3Alength);k(std%3A%3Abasic_string%3A%3Alength);k(length);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_temp_UINT = {my_input_string.length()};
+    my_temp_UINT = { my_input_string.length() };
 
     // מייצר מספיק רווחים שיספיקו לתוצאה לפי אורך המחרוזת.
-    wstring my_output_wstring(my_temp_UINT,
-                              L' ');
+    wstring my_output_wstring( my_temp_UINT,
+                               L' ' );
 
     my_error_stack.pop(); // my_temp_UINT.
 
-    basic_string <wchar_t>::iterator my_output_string_begin = {};
+    basic_string < wchar_t >::iterator my_output_string_begin = {};
 
-    my_output_string_begin = {my_output_wstring.begin()};
+    my_output_string_begin = { my_output_wstring.begin() };
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(xutility%2Fstd%3A%3Acopy);k(std%3A%3Acopy);k(copy);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
     // מעתיק את מחרוזת הכניסה ליציאה מההתחלה עד הסוף.
-    copy(my_input_string_begin,
-         my_input_string_end,
-         my_output_string_begin);
+    copy( my_input_string_begin,
+          my_input_string_end,
+          my_output_string_begin );
 
     return my_output_wstring;
 }
 
 
 // מוסיף את פרטי יצירת הקשר.
-void My_error::my_add_contact_information(void)
+void My_error::my_add_contact_information( void )
 {
     // פרטי יצירת קשר כדי שאוכל לתקן את השגיאה.
-    my_error.my_final_error_wstring += {L"שלח בבקשה את פרטי השגיאה לכתובת"};
+    my_error.my_final_error_wstring += { L"שלח בבקשה את פרטי השגיאה לכתובת" };
 
-    my_add_line(my_error.my_final_error_wstring);
+    my_add_line( my_error.my_final_error_wstring );
 
-    my_error.my_final_error_wstring += {MY_DEVELOPERS_EMAIL_ADDRESS};
+    my_error.my_final_error_wstring += { MY_PROJECTS_DEVELOPERS_EMAIL };
 }
 
 
 // השגיאה מוכנה להצגה.
-void My_error::my_error_is_ready_for_display(void)
+void My_error::my_error_is_ready_for_display( void )
 {
     // הכנת התצוגה לישור לימין.
-    my_internal_error_counter = {8};
+    my_internal_error_counter = { 8 };
 
-    my_error_stack.push({__FILE__,
-                        __FUNCTION__,
-                        __LINE__,
-                        L"my_temp_UINT"});
+    my_error_stack.push( { __FILE__,
+                           __FUNCTION__,
+                           __LINE__,
+                           L"my_temp_UINT" } );
 
-    My_sub_range<UINT,
-        MY_INVALID_UNSIGNED_INT,
-        MY_MAXIMUM_MESSAGE_BOX_UINT> my_temp_UINT;
+    My_sub_range< UINT,
+                  MY_INVALID_UNSIGNED_INT,
+                  MY_MAXIMUM_MESSAGE_BOX_UINT > my_temp_UINT;
 
-    my_temp_UINT = {MY_MESSAGE_BOX_UINT};
+    my_temp_UINT = { MY_MESSAGE_BOX_UINT };
     // המרת סוג המחרוזת לסוג של ווינדוס.
 
-    LPCWSTR my_temp_LPCWSTR = {MY_INVALID_LPCWSTR};
+    LPCWSTR my_temp_LPCWSTR = { MY_INVALID_LPCWSTR };
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(xstring%2Fstd%3A%3Abasic_string%3A%3Ac_str);k(std%3A%3Abasic_string%3A%3Ac_str);k(c_str);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
 
-    my_temp_LPCWSTR = {my_final_error_wstring.c_str()};
+    my_temp_LPCWSTR = { my_final_error_wstring.c_str() };
 
     // אין טעם לבדוק קוד חזרה.
-    MessageBoxW(nullptr,
-                my_temp_LPCWSTR,
-                nullptr,
-                my_temp_UINT);
+    MessageBoxW( nullptr,
+                 my_temp_LPCWSTR,
+                 nullptr,
+                 my_temp_UINT );
 
     // מנקה את הנתון האחרון שנותר במחסנית.
     my_error_stack.pop(); // my_temp_UINT.
@@ -2224,67 +2245,67 @@ void My_error::my_error_is_ready_for_display(void)
 
 
 // יציאה עקב תקלה במנגנון דיווח השגיאות.
-void My_error::my_catastrophic_error(void)
+void My_error::my_catastrophic_error( void )
 {
     // השגיאה קרתה במנגנון התצוגה ולכן היא קטסטרופלית.
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
-    my_temp_wstring = {to_wstring(my_internal_error_counter)};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
+    my_temp_wstring = { to_wstring( my_internal_error_counter ) };
 
-    my_final_error_wstring = {MY_INTERNAL_ERROR_MESSAGE_LPCWSTR};
-    my_final_error_wstring += {my_temp_wstring};
+    my_final_error_wstring = { MY_INTERNAL_ERROR_MESSAGE_LPCWSTR };
+    my_final_error_wstring += { my_temp_wstring };
 
-    LPCWSTR my_temp_LPCWSTR = {MY_INVALID_LPCWSTR};
-    my_temp_LPCWSTR = {my_final_error_wstring.c_str()};
+    LPCWSTR my_temp_LPCWSTR = { MY_INVALID_LPCWSTR };
+    my_temp_LPCWSTR = { my_final_error_wstring.c_str() };
 
     // מציג הודעת שגיאה בסיסית ויוצא.
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(winuser%2FMessageBoxW);k(MessageBoxW);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    MessageBoxW(nullptr,
-                my_temp_LPCWSTR,
-                nullptr,
-                MY_MESSAGE_BOX_UINT);
+    MessageBoxW( nullptr,
+                 my_temp_LPCWSTR,
+                 nullptr,
+                 MY_MESSAGE_BOX_UINT );
 
     my_close_application();
 }
 
 
 // מעדכן תוכן בקובץ הלוג.
-void My_logger::my_update(const wstring& my_error_wstring)
+void My_logger::my_update( const wstring& my_error_wstring )
 {
     // אתחול קובץ הלוג.
     my_logger.my_initialize();
 
-    my_error.my_internal_error_counter = {7};
+    my_error.my_internal_error_counter = { 7 };
 
-    my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__,
-                                         L"my_mode"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_mode" } );
 
     // מוד פתיחת הקובץ הוא הוספה לקיים.
-    My_sub_range<signed int,
-        MY_INVALID_SIGNED_INT,
-        MY_MAXIMUM_WIOS_ENUM> my_mode;
+    My_sub_range< signed int,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_WIOS_ENUM > my_mode;
 
-    my_mode = {wios::out bitor
-        wios::app};
+    my_mode = { wios::out bitor
+                wios::app };
 
-    my_open(my_mode);
+    my_open( my_mode );
 
     my_error.my_error_stack.pop(); // mode.
 
-    my_write(my_error_wstring); // כותב את מחרוזת פרטי השגיאה.
+    my_write( my_error_wstring ); // כותב את מחרוזת פרטי השגיאה.
 
     my_close();
 }
 
 
 // יוצר את קובץ הלוג עם כותרת, תאריך ושעה.
-void My_logger::my_initialize(void)
+void My_logger::my_initialize( void )
 {
     // בדיקה אם קובץ הלוג מוכן לשימוש, כלומר מאותחל.
-    bool my_temp_bool = {false};
+    bool my_temp_bool = { false };
 
-    my_temp_bool = {my_is_initialized()};
+    my_temp_bool = { my_is_initialized() };
     if ( my_temp_bool )
     {
         return;
@@ -2294,132 +2315,132 @@ void My_logger::my_initialize(void)
 
     my_write_to_log_file();
 
-    my_is_log_file_initialized = {true}; // כעת הקובץ מאותחל ומוכן לשימוש.
+    my_is_log_file_initialized = { true }; // כעת הקובץ מאותחל ומוכן לשימוש.
 }
 
 
 // האם הלוג אותחל.
-const bool My_logger::my_is_initialized(void)
+const bool My_logger::my_is_initialized( void )
 {
     return my_is_log_file_initialized;
 }
 
 
 // מייצר את מחרוזת שם הקובץ מהתאריך והשעה.
-void My_logger::my_create_log_file_name(void)
+void My_logger::my_create_log_file_name( void )
 {
     // בניית המבנה שמחזיק את רכיבי התאריך והשעה.
     struct tm my_current_time = {};
 
-    my_create_time_struct(my_current_time);
+    my_create_time_struct( my_current_time );
 
     // בניית היום.
-    my_error.my_internal_error_counter = {5};
+    my_error.my_internal_error_counter = { 5 };
 
-    my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__,
-                                         L"my_date_time_digits"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_date_time_digits" } );
 
-    My_sub_range<signed int,
-        MY_INVALID_SIGNED_INT,
-        MY_MAXIMUM_YEAR> my_date_time_digits;
+    My_sub_range< signed int,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_YEAR> my_date_time_digits;
 
-    my_date_time_digits = {my_current_time.tm_mday};
+    my_date_time_digits = { my_current_time.tm_mday };
 
     // הוספת אפס אם המספר קטן מ-10.
-    my_add_leading_zero(my_date_time_digits);
+    my_add_leading_zero( my_date_time_digits );
 
     // הוספת קו מפריד בין חלקי התאריך והשעה.
-    my_add_dash(my_log_file_name);
+    my_add_dash( my_log_file_name );
 
-    signed int my_temp_int = {MY_INVALID_SIGNED_INT};
-    my_temp_int = {my_date_time_digits};
+    signed int my_temp_int = { MY_INVALID_SIGNED_INT };
+    my_temp_int = { my_date_time_digits };
 
-    my_add_month(my_temp_int,
-                 my_current_time);
+    my_add_month( my_temp_int,
+                  my_current_time );
 
-    my_date_time_digits = {my_temp_int};
-    my_temp_int = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { my_temp_int };
+    my_temp_int = { MY_INVALID_SIGNED_INT };
 
-    my_add_year(my_temp_int,
-                my_current_time);
+    my_add_year( my_temp_int,
+                 my_current_time );
 
-    my_date_time_digits = {my_temp_int};
-    my_temp_int = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { my_temp_int };
+    my_temp_int = { MY_INVALID_SIGNED_INT };
 
-    my_add_hour(my_temp_int,
-                my_current_time);
+    my_add_hour( my_temp_int,
+                 my_current_time );
 
-    my_date_time_digits = {my_temp_int};
-    my_temp_int = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { my_temp_int };
+    my_temp_int = { MY_INVALID_SIGNED_INT };
 
-    my_add_minutes(my_temp_int,
-                   my_current_time);
+    my_add_minutes( my_temp_int,
+                    my_current_time );
 
-    my_date_time_digits = {my_temp_int};
-    my_temp_int = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { my_temp_int };
+    my_temp_int = { MY_INVALID_SIGNED_INT };
 
-    my_add_seconds(my_temp_int,
-                   my_current_time);
+    my_add_seconds( my_temp_int,
+                    my_current_time );
 
-    my_date_time_digits = {my_temp_int};
+    my_date_time_digits = { my_temp_int };
 
     my_error.my_error_stack.pop(); // my_date_time_digits.
 
                                            // הוספת סיומת שם הקובץ.
-    my_log_file_name += {MY_LOG_FILE_EXTENSION};
+    my_log_file_name += { MY_LOG_FILE_EXTENSION };
 }
 
 
 // יצירת מחרוזת השעה והתאריך כעת מורכבת מזמן יחסי.
-void My_logger::my_create_time_struct(struct tm& my_current_time)
+void My_logger::my_create_time_struct( struct tm& my_current_time )
 {
-    __time32_t my_seconds_since_1970 = {MY_INVALID_SIGNED_INT};
+    __time32_t my_seconds_since_1970 = { MY_INVALID_SIGNED_INT };
 
     // http://msdn.microsoft.com/en-us/library/1f4c8f33.aspx
-    _time32(&my_seconds_since_1970);
+    _time32( &my_seconds_since_1970 );
 
-    const signed int MY_TIME21_ERROR = {-1};
+    const signed int MY_TIME21_ERROR = { -1 };
     if ( MY_TIME21_ERROR == my_seconds_since_1970 )
     {
-        my_error.my_parameters_stack.push({L"שגיאה בחישוב הזמן",
-                                                  MY_NOֹ_ERRORֹ_CODE}); // אין קוד שגיאה להצגה.
+        my_error.my_parameters_stack.push( { L"שגיאה בחישוב הזמן",
+                                             MY_NOֹ_ERRORֹ_CODE } ); // אין קוד שגיאה להצגה.
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__});
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR); // כי אנחנו כבר בתוך התיעוד.
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR ); // כי אנחנו כבר בתוך התיעוד.
     }
 
-    my_error.my_internal_error_counter = {4};
+    my_error.my_internal_error_counter = { 4 };
 
-    my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__,
-                                         L"my_errno_t_code"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_errno_t_code" } );
 
-    My_sub_range<errno_t,
-        MY_INVALID_SIGNED_INT,
-        MY_MAXIMUM_ERRNO_T_CODE> my_errno_t_code;
+    My_sub_range< errno_t,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_ERRNO_T_CODE > my_errno_t_code;
 
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(time%2F_localtime32_s);k(_localtime32_s);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-    my_errno_t_code = {_localtime32_s(&my_current_time,
-                                      &my_seconds_since_1970)};
+    my_errno_t_code = { _localtime32_s( &my_current_time,
+                                        &my_seconds_since_1970 ) };
 
     if ( my_errno_t_code )
     {
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__});
 
-        my_error.my_parameters_stack.push({L"שגיאה בהמרת הזמן",
-                                                  my_errno_t_code});
+        my_error.my_parameters_stack.push( { L"שגיאה בהמרת הזמן",
+                                             my_errno_t_code } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR );
     }
 
     my_error.my_error_stack.pop(); // my_errno_t_code.
@@ -2427,183 +2448,183 @@ void My_logger::my_create_time_struct(struct tm& my_current_time)
 
 
 // מוסיף 0 למספר.
-void My_logger::my_add_leading_zero(const signed int my_date_time_digits)
+void My_logger::my_add_leading_zero( const signed int my_date_time_digits )
 {
     if ( my_date_time_digits < 10 )
     {
-        my_log_file_name += {L"0"};
+        my_log_file_name += { L"0" };
     }
 
     // הוספת המספר למחרוזת שם קובץ הלוג.
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
 
-    my_temp_wstring = {to_wstring(my_date_time_digits)};
+    my_temp_wstring = { to_wstring( my_date_time_digits ) };
 
-    my_log_file_name += {my_temp_wstring};
+    my_log_file_name += { my_temp_wstring };
 }
 
 
 // מוסיף מקף למחרוזת.
-void My_logger::my_add_dash(wstring& my_input_wstring)
+void My_logger::my_add_dash( wstring& my_input_wstring )
 {
-    my_input_wstring += {L"-"};
+    my_input_wstring += { L"-" };
 }
 
 
 // הוספת החודש.
-void My_logger::my_add_month(signed int& my_date_time_digits,
-                             const tm my_current_time)
+void My_logger::my_add_month( signed int& my_date_time_digits,
+                              const tm my_current_time )
 {
-    my_date_time_digits = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { MY_INVALID_SIGNED_INT };
 
-    my_date_time_digits = {my_current_time.tm_mon};
+    my_date_time_digits = { my_current_time.tm_mon };
 
     my_date_time_digits++; // מפני שהפונקציה מחזירה חודש מבוסס אפס.
 
-    my_add_leading_zero(my_date_time_digits);
+    my_add_leading_zero( my_date_time_digits );
 
-    my_add_dash(my_log_file_name);
+    my_add_dash( my_log_file_name );
 }
 
 
 // הוספת השנה.
-void My_logger::my_add_year(signed int& my_date_time_digits,
-                            const tm my_current_time)
+void My_logger::my_add_year( signed int& my_date_time_digits,
+                             const tm my_current_time )
 {
-    my_date_time_digits = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { MY_INVALID_SIGNED_INT };
 
-    my_date_time_digits = {my_current_time.tm_year};
+    my_date_time_digits = { my_current_time.tm_year };
 
-    const signed int MY_YEARֹ_CONVERSION_ֹBIAS = {1900};
+    const signed int MY_YEARֹ_CONVERSION_ֹBIAS = { 1900 };
 
     my_date_time_digits += MY_YEARֹ_CONVERSION_ֹBIAS; // מפני שהפונקציה מחזירה מספר נמוך.
 
-    wstring my_temp_wstring = {MY_INVALID_WSTRING};
+    wstring my_temp_wstring = { MY_INVALID_WSTRING };
 
-    my_temp_wstring = {to_wstring(my_date_time_digits)};
+    my_temp_wstring = { to_wstring( my_date_time_digits ) };
 
-    my_log_file_name += {my_temp_wstring};
+    my_log_file_name += { my_temp_wstring };
 
     // הוספת רווח בין התאריך לשעה.
-    my_error.my_add_space(my_log_file_name);
+    my_error.my_add_space( my_log_file_name );
 }
 
 
 // מוסיף רווח למחרוזת.
-void My_error::my_add_space(wstring& my_input_wstring)
+void My_error::my_add_space( wstring& my_input_wstring )
 {
-    my_input_wstring += {L" "};
+    my_input_wstring += { L" " };
 }
 
 
 // הוספת השעה.
-void My_logger::my_add_hour(signed int& my_date_time_digits,
-                            const tm my_current_time)
+void My_logger::my_add_hour( signed int& my_date_time_digits,
+                             const tm my_current_time )
 {
-    my_date_time_digits = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { MY_INVALID_SIGNED_INT };
 
-    my_date_time_digits = {my_current_time.tm_hour};
+    my_date_time_digits = { my_current_time.tm_hour };
 
-    my_add_leading_zero(my_date_time_digits);
+    my_add_leading_zero( my_date_time_digits );
 
-    my_add_dash(my_log_file_name);
+    my_add_dash( my_log_file_name );
 }
 
 
 // הוספת הדקות.
-void My_logger::my_add_minutes(signed int& my_date_time_digits,
-                               const tm my_current_time)
+void My_logger::my_add_minutes( signed int& my_date_time_digits,
+                                const tm my_current_time )
 {
-    my_date_time_digits = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { MY_INVALID_SIGNED_INT };
 
-    my_date_time_digits = {my_current_time.tm_min};
+    my_date_time_digits = { my_current_time.tm_min };
 
-    my_add_leading_zero(my_date_time_digits);
+    my_add_leading_zero( my_date_time_digits );
 
-    my_add_dash(my_log_file_name);
+    my_add_dash( my_log_file_name );
 }
 
 
 // הוספת השניות.
-void My_logger::my_add_seconds(signed int& my_date_time_digits,
-                               const tm my_current_time)
+void My_logger::my_add_seconds( signed int& my_date_time_digits,
+                                const tm my_current_time )
 {
-    my_date_time_digits = {MY_INVALID_SIGNED_INT};
+    my_date_time_digits = { MY_INVALID_SIGNED_INT };
 
-    my_date_time_digits = {my_current_time.tm_sec};
+    my_date_time_digits = { my_current_time.tm_sec };
 
-    my_add_leading_zero(my_date_time_digits);
+    my_add_leading_zero( my_date_time_digits );
 }
 
 
 // מנהל את תהליך הכתיבה לקובץ.
-void My_logger::my_write_to_log_file(void)
+void My_logger::my_write_to_log_file( void )
 {
-    my_error.my_internal_error_counter = {6};
+    my_error.my_internal_error_counter = { 6 };
 
     // קביעת מוד פתיחת הקובץ לאיפוס קובץ קיים.
-    my_error.my_error_stack.push({__FILE__,
-                                         __FUNCTION__,
-                                         __LINE__,
-                                         L"my_mode"});
+    my_error.my_error_stack.push( { __FILE__,
+                                    __FUNCTION__,
+                                    __LINE__,
+                                    L"my_mode" } );
 
-    My_sub_range<signed int,
-        MY_INVALID_SIGNED_INT,
-        MY_MAXIMUM_WIOS_ENUM> my_mode;
+    My_sub_range< signed int,
+                  MY_INVALID_SIGNED_INT,
+                  MY_MAXIMUM_WIOS_ENUM > my_mode;
 
     // http://msdn.microsoft.com/en-us/library/vstudio/71hd1fc0(v=vs.120).aspx
-    my_mode = {wios::out bitor
-        wios::trunc};
+    my_mode = { wios::out bitor
+                wios::trunc };
 
-    my_open(my_mode); // פותח את הקובץ לפי המוד הרצוי.
+    my_open( my_mode ); // פותח את הקובץ לפי המוד הרצוי.
 
     my_error.my_error_stack.pop(); // my_mode.
 
-    my_write(MY_LOG_FILE_HEADER); // כותב את הכותרת לקובץ.
+    my_write( MY_LOG_FILE_HEADER ); // כותב את הכותרת לקובץ.
 
     my_close(); // סוגר את קובץ הלוג.
 }
 
 
 // פותח את קובץ הלוג.
-void My_logger::my_open(const signed int my_mode)
+void My_logger::my_open( const signed int my_mode )
 {
-    my_log_file.open(my_log_file_name,
-                     my_mode);
+    my_log_file.open( my_log_file_name,
+                      my_mode );
 
     // בודק האם הפתיחה אכן הצליחה.
-    bool my_temp_bool = {false};
+    bool my_temp_bool = { false };
 
-    my_temp_bool = {my_log_file.is_open()};
+    my_temp_bool = { my_log_file.is_open() };
 
     if ( not my_temp_bool )
     {
         // בודק פרטנית איזה דגלון שגיאה קפץ.
-        wstring my_error_code = {MY_INVALID_WSTRING};
-        my_error_code = {my_check_flags()};
+        wstring my_error_code = { MY_INVALID_WSTRING };
+        my_error_code = { my_check_flags() };
 
-        my_error.my_parameters_stack.push({L"שגיאה בפתיחת קובץ הלוג" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"שגיאה בפתיחת קובץ הלוג" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__ } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR );
     }
 }
 
 
 // בודק דיגלוני שגיאות של קובץ.
-const wstring My_logger::my_check_flags(void)
+const wstring My_logger::my_check_flags( void )
 {
     // בונה מחרוזת רחבה של כל דיגלוני השגיאה שקפצו.
-    wstring my_error_code = {L""};
+    wstring my_error_code = { L"" };
 
     if ( my_log_file.bad() )
     {
-        my_error_code = {L" BAD "};
+        my_error_code = { L" BAD " };
     }
 
     if ( my_log_file.fail() )
@@ -2616,70 +2637,70 @@ const wstring My_logger::my_check_flags(void)
 
 
 // כותב לקובץ הרישום.
-void My_logger::my_write(const wstring& my_error_wstring)
+void My_logger::my_write( const wstring& my_error_wstring )
 {
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(ostream%2Fstd%3A%3Aendl);k(std%3A%3Aendl);k(endl);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
     my_log_file << my_error_wstring << endl;
 
     // בודק שהכתיבה הצליחה.
-    bool my_temp_bool = {false};
+    bool my_temp_bool = { false };
 
-    my_temp_bool = {my_log_file.good()};
+    my_temp_bool = { my_log_file.good() };
 
     if ( not my_temp_bool )
     {
-        wstring my_error_code = {MY_INVALID_WSTRING};
-        my_error_code = {my_check_flags()};
+        wstring my_error_code = { MY_INVALID_WSTRING };
+        my_error_code = { my_check_flags() };
 
-        my_error.my_parameters_stack.push({L"כתיבה לקובץ הלוג נכשלה" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"כתיבה לקובץ הלוג נכשלה" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__ } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR );
     }
 }
 
 
 // סוגר את קובץ הלוג.
-void My_logger::my_close(void)
+void My_logger::my_close( void )
 {
     my_log_file.close(); // כדי שנוכל להוסיף טקסט מאוחר יותר.
 
                          // בודק שהסגירה הצליחה.
-    bool my_temp_bool = {false};
-    my_temp_bool = {my_log_file.good()};
+    bool my_temp_bool = { false };
+    my_temp_bool = { my_log_file.good() };
 
     if ( not my_temp_bool )
     {
-        wstring my_error_code = {MY_INVALID_WSTRING};
-        my_error_code = {my_check_flags()};
+        wstring my_error_code = { MY_INVALID_WSTRING };
+        my_error_code = { my_check_flags() };
 
-        my_error.my_parameters_stack.push({L"שגיאה בסגירת קובץ הלוג" + my_error_code,
-                                                  MY_NOֹ_ERRORֹ_CODE});
+        my_error.my_parameters_stack.push( { L"שגיאה בסגירת קובץ הלוג" + my_error_code,
+                                             MY_NOֹ_ERRORֹ_CODE } );
 
-        my_error.my_error_stack.push({__FILE__,
-                                             __FUNCTION__,
-                                             __LINE__});
+        my_error.my_error_stack.push( { __FILE__,
+                                        __FUNCTION__,
+                                        __LINE__ } );
 
-        my_error.my_report_error(My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
-                                         My_error::MY_LOG_ERROR::MY_DONT_LOG_ERROR);
+        my_error.my_report_error( My_error::MY_DISPLAY_ERROR::MY_DO_DISPLAY_ERROR,
+                                  My_error::MY_LOG_ERROR::MY_DO_NOT_LOG_ERROR );
     }
 }
 
 
 // סוגר את הישום בצורה מסודרת.
-void My_error::my_close_application(void)
+void My_error::my_close_application( void )
 {
     // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(handleapi%2FCloseHandle);k(CloseHandle);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
     // אין צורך לבדוק קוד חזרה כי גם ככה יוצאים.
-    CloseHandle(my_handle_code); // משחרר את המשאב.
+    CloseHandle( my_handle_code ); // משחרר את המשאב.
 
-                                 // יציאה עם קוד שגיאה שמסמן כישלון.
-    exit(EXIT_FAILURE);
+    // יציאה עם קוד שגיאה שמסמן כישלון.
+    exit( EXIT_FAILURE );
 }
 
 
@@ -2809,17 +2830,17 @@ LRESULT CALLBACK window_process(HWND hWnd,
 #ifdef NEGEVSTORM
 // נקודת הכניסה לפרויקט.
 // http://msdn.microsoft.com/query/dev14.query?appId=Dev14IDEF1&l=EN-US&k=k(negevstorm%2FwWinMain);k(wWinMain);k(DevLang-C%2B%2B);k(TargetOS-Windows)&rd=true
-signed int WINAPI WinMain(_In_ const HINSTANCE my_instance,
-                               _In_opt_ const HINSTANCE my_previous_instance,
-                               _In_ const LPTSTR my_command_line,
-                               _In_ const signed int my_main_window_mode)
+signed int WINAPI WinMain( _In_ const HINSTANCE my_instance,
+                           _In_opt_ const HINSTANCE my_previous_instance,
+                           _In_ const LPTSTR my_command_line,
+                           _In_ const signed int my_main_window_mode )
 {
-    UNREFERENCED_PARAMETER(my_previous_instance); // לא בשימוש.
-    UNREFERENCED_PARAMETER(my_command_line); // לא בשימוש.
+    UNREFERENCED_PARAMETER( my_previous_instance ); // לא בשימוש.
+    UNREFERENCED_PARAMETER( my_command_line ); // לא בשימוש.
 
     my_initialize_everything(); // בדיקות ואתחולים.
 
-                                // TODO: Place code here.
+    // TODO: Place code here.
     MSG windows_message;
     HACCEL accelerators_table;
 
