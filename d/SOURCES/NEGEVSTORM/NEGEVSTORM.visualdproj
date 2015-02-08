@@ -1,0 +1,14 @@
+<DProject>
+ <ProjectGuid>6c58a892-10fb-4162-a0c0-305f416d6298</ProjectGuid>
+ <Config name="Debug">
+  <subsystem>2</subsystem>
+  <libfiles>ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
+ </Config>
+ <Config name="Release">
+  <subsystem>2</subsystem>
+  <libfiles>ole32.lib kernel32.lib user32.lib comctl32.lib comdlg32.lib</libfiles>
+ </Config>
+ <Folder name="NEGEVSTORM">
+  <File path="winmain.d" />
+ </Folder>
+</DProject>
